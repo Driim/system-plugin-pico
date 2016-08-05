@@ -79,6 +79,13 @@ Requires: liblazymount = %{version}
 %description -n liblazymount-devel
 Development library for lazy mount feature.It supports some interface functions.
 
+%package -n system-upgrade
+Summary: System upgrade available patch
+License: Apache-2.0
+
+%description -n system-upgrade
+Systemd offline system update activation package
+
 %prep
 %setup -q
 
@@ -142,6 +149,14 @@ ln -s ../tizen-fstrim-user.timer %{buildroot}%{_unitdir}/graphical.target.wants/
 install -m 644 units/tizen-fstrim-user.service %{buildroot}%{_unitdir}
 mkdir -p %{buildroot}%{_bindir}
 install -m 755 scripts/tizen-fstrim-on-charge.sh %{buildroot}%{_bindir}
+
+# upgrade
+mkdir -p %{buildroot}%{_datadir}
+cp -r upgrade %{buildroot}%{_datadir}
+mkdir -p %{buildroot}%{_unitdir}/system-update.target.wants
+install -m 644 units/offline-update.service %{buildroot}%{_unitdir}
+ln -s ../offline-update.service %{buildroot}%{_unitdir}/system-update.target.wants/offline-update.service
+ln -s %{_datadir}/upgrade %{buildroot}/system-update
 
 %clean
 rm -rf %{buildroot}
@@ -240,3 +255,8 @@ mv %{_sysconfdir}/fstab_initrd %{_sysconfdir}/fstab
 %{_libdir}/pkgconfig/liblazymount.pc
 %{_bindir}/test_lazymount
 
+%files -n system-upgrade
+%{_datadir}/upgrade
+%{_unitdir}/offline-update.service
+%{_unitdir}/system-update.target.wants/offline-update.service
+/system-update

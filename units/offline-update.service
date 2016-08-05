@@ -1,0 +1,8 @@
+[Unit]
+Description=System update script service
+Requires=sysinit.target
+After=sysinit.target
+
+[Service]
+Type=simple
+ExecStart=/system-update/update.sh
