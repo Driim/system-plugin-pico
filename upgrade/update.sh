@@ -7,6 +7,7 @@ RESULT_FILE=/upgrade_result
 RUN=/bin/sh
 
 rm /system-update
+rm /usr/lib/udev/rules.d/99-sdb-switch.rules
 
 if [ ! -d ${PATCH_DIR} ]
 then

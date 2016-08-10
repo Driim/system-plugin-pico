@@ -157,6 +157,7 @@ mkdir -p %{buildroot}%{_unitdir}/system-update.target.wants
 install -m 644 units/offline-update.service %{buildroot}%{_unitdir}
 ln -s ../offline-update.service %{buildroot}%{_unitdir}/system-update.target.wants/offline-update.service
 ln -s %{_datadir}/upgrade %{buildroot}/system-update
+install -m 644 rules/99-sdb-switch.rules %{buildroot}%{_prefix}/lib/udev/rules.d/
 
 %clean
 rm -rf %{buildroot}
@@ -260,3 +261,4 @@ mv %{_sysconfdir}/fstab_initrd %{_sysconfdir}/fstab
 %{_unitdir}/offline-update.service
 %{_unitdir}/system-update.target.wants/offline-update.service
 /system-update
+%{_prefix}/lib/udev/rules.d/99-sdb-switch.rules
