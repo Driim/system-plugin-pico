@@ -122,8 +122,9 @@ mkdir -p %{buildroot}%{_unitdir}/basic.target.wants
 ln -s ../resize2fs@.service %{buildroot}%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\\x2dlabel-system\\x2ddata.service
 ln -s ../resize2fs@.service %{buildroot}%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\\x2dlabel-user.service
 ln -s ../resize2fs@.service %{buildroot}%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\\x2dlabel-rootfs.service
-# ugly temporary patch for initrd wearable
+
 ln -s ../resize2fs@.service %{buildroot}%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\\x2dpartlabel-user.service
+ln -s ../resize2fs@.service %{buildroot}%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\\x2dpartlabel-system\\x2ddata.service
 
 ln -s ../tizen-system-env.service %{buildroot}%{_unitdir}/basic.target.wants/tizen-system-env.service
 
@@ -207,6 +208,7 @@ systemctl daemon-reload
 /csa
 %{_sysconfdir}/fstab_initrd
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dpartlabel-user.service
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dpartlabel-system\x2ddata.service
 %{_unitdir}/csa.mount
 %{_unitdir}/local-fs.target.wants/csa.mount
 %{_unitdir}/umount-opt.service
@@ -230,6 +232,7 @@ mv %{_sysconfdir}/fstab_initrd %{_sysconfdir}/fstab
 %{_sysconfdir}/fstab_initrd
 %{_unitdir}/basic.target.wants/tizen-system-env.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dpartlabel-user.service
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dpartlabel-system\x2ddata.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
 %{_unitdir}/csa.mount
 %{_unitdir}/local-fs.target.wants/csa.mount
