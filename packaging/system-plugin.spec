@@ -251,6 +251,8 @@ mv %{_sysconfdir}/fstab_initrd %{_sysconfdir}/fstab
 %{_unitdir}/basic.target.wants/lazy_mount.path
 %{_unitdir}/lazy_mount.path
 %{_unitdir}/lazy_mount.service
+%{_bindir}/mount-user.sh
+
 
 %files -n liblazymount-devel
 %defattr(-,root,root,-)

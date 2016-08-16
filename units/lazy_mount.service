@@ -6,6 +6,6 @@ ConditionPathIsMountPoint = !/opt/usr
 Type=oneshot
 SmackProcessLabel=System
 ExecStartPre=/usr/bin/rm -f /run/.unlock_mnt /tmp/.lazy_mount
-ExecStart=/usr/bin/mount -L user /opt/usr
+ExecStart=/usr/bin/mount-user.sh
 ExecStartPost=/usr/bin/touch /run/.unlock_mnt
 SuccessExitStatus=0
