@@ -170,6 +170,9 @@ systemunit_DATA += \
 BASIC_TARGET_WANTS += \
 	lazy_mount.path
 
+bin_SCRIPTS = \
+	scripts/mount-user.sh
+
 # ------------------------------------------------------------------------------
 substitutions = \
        '|rootlibexecdir=$(rootlibexecdir)|' \
