@@ -14,6 +14,7 @@ Source2:   liblazymount.manifest
 Requires(post): /usr/bin/systemctl
 Requires(post): /usr/bin/vconftool
 BuildRequires: pkgconfig(vconf)
+BuildRequires: pkgconfig(libsystemd)
 
 %description
 This package provides target specific system configuration files.
@@ -169,7 +170,7 @@ systemctl daemon-reload
 
 %post -n liblazymount
 /sbin/ldconfig
-/usr/bin/vconftool set -f -t int db/system/lazy_mount_show_ui 1
+/usr/bin/vconftool set -f -t int db/system/lazy_mount_show_ui 0
 systemctl daemon-reload
 
 %postun -n liblazymount  -p /sbin/ldconfig

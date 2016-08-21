@@ -31,7 +31,7 @@
 #ifndef VCONFKEY_SYSTEM_LAZY_MOUNT_SHOW_UI
 #define VCONFKEY_SYSTEM_LAZY_MOUNT_SHOW_UI "db/system/lazy_mount_show_ui"
 #endif
-#define DEFAULT_VALUE_LAZY_MOUNT_SHOW_UI 1
+#define DEFAULT_VALUE_LAZY_MOUNT_SHOW_UI 0
 
 #define LAZY_MOUNT_FILE "/tmp/.lazy_mount"
 #define LAZY_MOUNT_CHECK_DIR "/run"

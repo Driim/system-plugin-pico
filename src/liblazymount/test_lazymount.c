@@ -1,6 +1,8 @@
 #include <lazy_mount.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <systemd/sd-daemon.h>
+#include <string.h>
 
 int get_input()
 {
@@ -32,6 +34,18 @@ int main(int argc, char **argv)
 {
     int data;
 	int sl_ret;
+	int i = 0;
+	if (argc == 2 && strncmp(argv[1], "wait", 5) == 0) {
+	    for ( i = 0 ; i < 3 ; i++ ) {
+			sl_ret = wait_mount_user();
+			if (sl_ret != 0) continue;
+			else break;
+		}
+
+		if ( i == 3 ) return -1;
+		sd_notify(0, "READY=1");
+		return 0;
+	}
 	while(1)
 	{
 		printf("Test\n");

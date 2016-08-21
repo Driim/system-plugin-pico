@@ -161,6 +161,7 @@ test_lazymount_CFLAGS = \
 
 test_lazymount_LDADD = \
 	-lvconf \
+	-lsystemd \
 	liblazymount.la
 
 systemunit_DATA += \
