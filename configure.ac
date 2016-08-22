@@ -117,6 +117,7 @@ AC_SUBST(M4_DEFINES)
 
 # ------------------------------------------------------------------------------
 PKG_CHECK_MODULES(VCONF, vconf)
+PKG_CHECK_MODULES(TZPLATFORMCONF, libtzplatform-config)
 
 # ------------------------------------------------------------------------------
 AC_SUBST([LIBLAZYMOUNT_PC_REQUIRES], "")

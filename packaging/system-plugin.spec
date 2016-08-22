@@ -10,11 +10,13 @@ License:   Apache-2.0
 Source0:   %{name}-%{version}.tar.bz2
 Source1:   %{name}.manifest
 Source2:   liblazymount.manifest
+Source3:   systemd-user-helper.manifest
 
 Requires(post): /usr/bin/systemctl
 Requires(post): /usr/bin/vconftool
 BuildRequires: pkgconfig(vconf)
 BuildRequires: pkgconfig(libsystemd)
+BuildRequires: pkgconfig(libtzplatform-config)
 
 %description
 This package provides target specific system configuration files.
@@ -67,7 +69,6 @@ License: Apache-2.0
 Requires: vconf
 Requires: liblazymount = %{version}
 
-
 %description -n liblazymount
 Library for lazy mount feature. It supports some interface functions.
 
@@ -79,6 +80,13 @@ Requires: liblazymount = %{version}
 
 %description -n liblazymount-devel
 Development library for lazy mount feature.It supports some interface functions.
+
+%package -n systemd-user-helper
+Summary: Systemd user launch helper for supporting Tizen specific feature
+License: Apache-2.0
+
+%description -n systemd-user-helper
+Systemd user launch helper supports Tizen specific feature like directory compatibility and container.
 
 %package -n system-upgrade
 Summary: System upgrade available patch
@@ -93,6 +101,7 @@ Systemd offline system update activation package
 %build
 cp %{SOURCE1} .
 cp %{SOURCE2} .
+cp %{SOURCE3} .
 
 ./autogen.sh
 %reconfigure \
@@ -254,7 +263,6 @@ mv %{_sysconfdir}/fstab_initrd %{_sysconfdir}/fstab
 %{_unitdir}/lazy_mount.service
 %{_bindir}/mount-user.sh
 
-
 %files -n liblazymount-devel
 %defattr(-,root,root,-)
 %manifest liblazymount.manifest
@@ -271,3 +279,14 @@ mv %{_sysconfdir}/fstab_initrd %{_sysconfdir}/fstab
 %{_unitdir}/system-update.target.wants/init-update.service
 /system-update
 %{_prefix}/lib/udev/rules.d/99-sdb-switch.rules
+
+%files -n systemd-user-helper
+%manifest systemd-user-helper.manifest
+%caps(cap_sys_admin,cap_mac_admin,cap_setgid=ei) %{_bindir}/systemd_user_helper
+
+%posttrans -n systemd-user-helper
+cp -a /usr/lib/systemd/system/user\@.service /usr/lib/systemd/system/__user@.service
+/usr/bin/sed -i -e 's/Type=\(.*\)/Type=simple/' /usr/lib/systemd/system/user\@.service
+/usr/bin/sed -i -e 's/ExecStart=\(.*\)/ExecStart=\/usr\/bin\/systemd_user_helper %i/' /usr/lib/systemd/system/user\@.service
+/usr/bin/sed -i -e '/RemainAfterExit=\(.*\)/d' /usr/lib/systemd/system/user\@.service
+echo 'RemainAfterExit=yes' >> /usr/lib/systemd/system/user\@.service

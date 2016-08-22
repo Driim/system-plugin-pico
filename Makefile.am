@@ -149,7 +149,8 @@ noinst_liblazymount_la_SOURCES = \
 
 # ------------------------------------------------------------------------------
 bin_PROGRAMS = \
-	test_lazymount
+	test_lazymount \
+	systemd_user_helper
 
 test_lazymount_SOURCES = \
 	src/liblazymount/test_lazymount.c
@@ -173,6 +174,17 @@ BASIC_TARGET_WANTS += \
 
 bin_SCRIPTS = \
 	scripts/mount-user.sh
+
+systemd_user_helper_SOURCES = \
+	src/systemd-user-helper/systemd-user-helper.c
+
+systemd_user_helper_CFLAGS = \
+	$(AM_CFLAGS) \
+	${TZPLATFORMCONF_CFLAGS}
+
+systemd_user_helper_LDADD = \
+	${TZPLATFORMCONF_LIBS} \
+	-ldl
 
 # ------------------------------------------------------------------------------
 substitutions = \
