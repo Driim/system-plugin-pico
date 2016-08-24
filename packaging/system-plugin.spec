@@ -152,6 +152,9 @@ mkdir -p %{buildroot}%{_sysconfdir}
 install -m 644 etc/fstab %{buildroot}%{_sysconfdir}
 # ugly temporary patch for initrd wearable
 install -m 644 etc/fstab_initrd %{buildroot}%{_sysconfdir}
+# lazymnt
+install -m 644 etc/fstab_lazymnt %{buildroot}%{_sysconfdir}
+install -m 644 etc/fstab_initrd_lazymnt %{buildroot}%{_sysconfdir}
 
 # fstrim
 mkdir -p %{buildroot}%{_unitdir}/graphical.target.wants
@@ -179,7 +182,7 @@ systemctl daemon-reload
 
 %post -n liblazymount
 /sbin/ldconfig
-/usr/bin/vconftool set -f -t int db/system/lazy_mount_show_ui 0
+/usr/bin/vconftool set -f -t int db/system/lazy_mount_show_ui 1
 systemctl daemon-reload
 
 %postun -n liblazymount  -p /sbin/ldconfig
@@ -203,7 +206,7 @@ systemctl daemon-reload
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
-%{_sysconfdir}/fstab
+%{_sysconfdir}/fstab_lazymnt
 %{_unitdir}/graphical.target.wants/tizen-fstrim-user.timer
 %{_unitdir}/tizen-fstrim-user.timer
 %{_unitdir}/tizen-fstrim-user.service
@@ -232,7 +235,10 @@ mv %{_sysconfdir}/fstab_initrd %{_sysconfdir}/fstab
 # fstab for tm1
 %post spreadtrum
 rm %{_sysconfdir}/fstab
-mv %{_sysconfdir}/fstab_initrd %{_sysconfdir}/fstab
+mv %{_sysconfdir}/fstab_initrd_lazymnt %{_sysconfdir}/fstab
+%post n4
+rm %{_sysconfdir}/fstab
+mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 
 %files spreadtrum
 %manifest %{name}.manifest
@@ -240,7 +246,7 @@ mv %{_sysconfdir}/fstab_initrd %{_sysconfdir}/fstab
 /csa
 %{_prefix}/lib/udev/rules.d/51-system-plugin-spreadtrum.rules
 %{_unitdir}/tizen-system-env.service
-%{_sysconfdir}/fstab_initrd
+%{_sysconfdir}/fstab_initrd_lazymnt
 %{_unitdir}/basic.target.wants/tizen-system-env.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dpartlabel-user.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dpartlabel-system\x2ddata.service
