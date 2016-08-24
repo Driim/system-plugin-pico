@@ -17,3 +17,6 @@ fi
 # Copy 3.0 rpm db
 rm -rf /var/lib/rpm/*
 cp -arf /system-update/data/rpm/* /var/lib/rpm
+
+# Disable cynara-check
+buxton2ctl security-disable
