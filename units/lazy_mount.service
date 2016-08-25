@@ -1,10 +1,8 @@
 [Unit]
 Description=Mount /opt/usr
-#ConditionPathIsMountPoint = !/opt/usr
 
 [Service]
 Type=oneshot
-SmackProcessLabel=System
-ExecStartPre=/usr/bin/rm -f /run/.unlock_mnt /tmp/.lazy_mount
+SmackProcessLabel=System::Privileged
 ExecStart=/usr/bin/mount-user.sh
 SuccessExitStatus=0

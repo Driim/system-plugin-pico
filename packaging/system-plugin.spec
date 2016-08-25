@@ -1,6 +1,8 @@
 #%define _unpackaged_files_terminate_build 0
 #%define debug_package %{nil}
 
+%define temp_wait_mount 1
+
 Name:      system-plugin
 Summary:   Target specific system configuration files
 Version:   0.1
@@ -152,6 +154,14 @@ mkdir -p %{buildroot}%{_sysconfdir}
 install -m 644 etc/fstab %{buildroot}%{_sysconfdir}
 # ugly temporary patch for initrd wearable
 install -m 644 etc/fstab_initrd %{buildroot}%{_sysconfdir}
+# lazymnt
+install -m 644 etc/fstab_lazymnt %{buildroot}%{_sysconfdir}
+install -m 644 etc/fstab_initrd_lazymnt %{buildroot}%{_sysconfdir}
+%if %{temp_wait_mount}
+mkdir -p %{buildroot}%{_unitdir_user}/basic.target.wants
+install -m 644 units/wait-user-mount.service %{buildroot}%{_unitdir_user}
+ln -s ../wait-user-mount.service %{buildroot}%{_unitdir_user}/basic.target.wants/wait-user-mount.service
+%endif
 
 # fstrim
 mkdir -p %{buildroot}%{_unitdir}/graphical.target.wants
@@ -203,7 +213,7 @@ systemctl daemon-reload
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
-%{_sysconfdir}/fstab
+%{_sysconfdir}/fstab_lazymnt
 %{_unitdir}/graphical.target.wants/tizen-fstrim-user.timer
 %{_unitdir}/tizen-fstrim-user.timer
 %{_unitdir}/tizen-fstrim-user.service
@@ -232,7 +242,10 @@ mv %{_sysconfdir}/fstab_initrd %{_sysconfdir}/fstab
 # fstab for tm1
 %post spreadtrum
 rm %{_sysconfdir}/fstab
-mv %{_sysconfdir}/fstab_initrd %{_sysconfdir}/fstab
+mv %{_sysconfdir}/fstab_initrd_lazymnt %{_sysconfdir}/fstab
+%post n4
+rm %{_sysconfdir}/fstab
+mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 
 %files spreadtrum
 %manifest %{name}.manifest
@@ -240,7 +253,7 @@ mv %{_sysconfdir}/fstab_initrd %{_sysconfdir}/fstab
 /csa
 %{_prefix}/lib/udev/rules.d/51-system-plugin-spreadtrum.rules
 %{_unitdir}/tizen-system-env.service
-%{_sysconfdir}/fstab_initrd
+%{_sysconfdir}/fstab_initrd_lazymnt
 %{_unitdir}/basic.target.wants/tizen-system-env.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dpartlabel-user.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dpartlabel-system\x2ddata.service
@@ -262,6 +275,11 @@ mv %{_sysconfdir}/fstab_initrd %{_sysconfdir}/fstab
 %{_unitdir}/lazy_mount.path
 %{_unitdir}/lazy_mount.service
 %{_bindir}/mount-user.sh
+%if %{temp_wait_mount}
+%{_bindir}/test_lazymount
+%{_unitdir_user}/basic.target.wants/wait-user-mount.service
+%{_unitdir_user}/wait-user-mount.service
+%endif
 
 %files -n liblazymount-devel
 %defattr(-,root,root,-)
@@ -269,7 +287,9 @@ mv %{_sysconfdir}/fstab_initrd %{_sysconfdir}/fstab
 %{_libdir}/liblazymount.so
 %{_includedir}/lazymount/lazy_mount.h
 %{_libdir}/pkgconfig/liblazymount.pc
+%if ! %{temp_wait_mount}
 %{_bindir}/test_lazymount
+%endif
 
 %files -n system-upgrade
 %{_datadir}/upgrade

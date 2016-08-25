@@ -1,0 +1,11 @@
+[Unit]
+Description=Wait user mount
+After=starter.service
+Before=basic.target
+DefaultDependencies=no
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/test_lazymount wait
+TimeoutStartSec=365d
+RemainAfterExit=yes
