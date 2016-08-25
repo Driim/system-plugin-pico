@@ -19,11 +19,7 @@ fi
 # Create home directory
 test ! -e /opt/usr/home && mkdir -p /opt/usr/home
 
-if [ ! -d ${OWNER_HOME} ]
-then
-	gum-utils --offline --delete-user --uid=5001
-	gum-utils --offline --add-user --username=owner --usertype=admin --usecret=tizen
-fi
+gum-utils --offline -u --uid 5001
 
 # Copy 3.0 rpm db
 rm -rf /var/lib/rpm/*
