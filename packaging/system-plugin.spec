@@ -302,7 +302,7 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 
 %files -n systemd-user-helper
 %manifest systemd-user-helper.manifest
-%caps(cap_sys_admin,cap_mac_admin,cap_setgid=ei) %{_bindir}/systemd_user_helper
+%caps(cap_sys_admin,cap_mac_admin,cap_mac_override,cap_dac_override,cap_setgid=ei) %{_bindir}/systemd_user_helper
 
 %posttrans -n systemd-user-helper
 cp -a /usr/lib/systemd/system/user\@.service /usr/lib/systemd/system/__user@.service

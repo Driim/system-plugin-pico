@@ -19,6 +19,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #include <sched.h>
 #include <sys/mount.h>
@@ -27,7 +28,7 @@
 
 #define LEGACY_CONTENTS_DIR "/opt/usr/media"
 
-#define LAZYMOUNT_LIB "/usr/lib/liblazymount.so"
+#define LAZYMOUNT_LIB "/usr/lib/liblazymount.so.0"
 #define CONTAINER_LIB "/usr/lib/security/pam_krate.so"
 
 #define LOAD_SYMBOL(handle, sym, name) \
@@ -49,6 +50,13 @@ static int normal_user_preprocess(char *username)
 		fprintf(stderr,"unshare failed\n");
 		return r;
 	}
+
+	r = mount(NULL, "/", NULL, MS_SLAVE | MS_REC, NULL);
+	if (r < 0) {
+		fprintf(stderr,"Failed to change the propagation type of root to SLAVE\n");
+		return r;
+	}
+
 	return 0;
 }
 
@@ -58,7 +66,7 @@ static int normal_user_postprocess(char *username)
 	r = mount(tzplatform_getenv(TZ_USER_CONTENT),
 			LEGACY_CONTENTS_DIR, NULL, MS_BIND, NULL);
 	if (r < 0) {
-		fprintf(stderr, "user content bind mount failed\n");
+		fprintf(stderr, "user content bind mount failed - %d\n",errno);
 		return r;
 	}
 	return 0;
@@ -125,8 +133,10 @@ static int wait_condition(void)
 	int (*wait_mount_user)(void);
 
 	r = access(LAZYMOUNT_LIB,F_OK);
-	if (r < 0)
+	if (r < 0){
+		fprintf(stderr, "cannot find lazymount module - No support lazymount\n");
 		return 0;
+	}
 
 	h = dlopen(LAZYMOUNT_LIB, RTLD_LAZY);
 	if (!h) {
@@ -141,6 +151,7 @@ static int wait_condition(void)
 		fprintf(stderr, "wait_mout_user failed\n");
 		return r;
 	}
+
 	return 0;
 }
 
