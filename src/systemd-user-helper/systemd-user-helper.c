@@ -26,7 +26,9 @@
 
 #include <tzplatform_config.h>
 
+// For compatibility, Using hard-coded path
 #define LEGACY_CONTENTS_DIR "/opt/usr/media"
+#define LEGACY_APPS_DIR "/opt/usr/apps"
 
 #define LAZYMOUNT_LIB "/usr/lib/liblazymount.so.0"
 #define CONTAINER_LIB "/usr/lib/security/pam_krate.so"
@@ -69,6 +71,14 @@ static int normal_user_postprocess(char *username)
 		fprintf(stderr, "user content bind mount failed - %d\n",errno);
 		return r;
 	}
+
+	r = mount(tzplatform_getenv(TZ_USER_APP),
+			LEGACY_APPS_DIR, NULL, MS_BIND, NULL);
+	if (r < 0) {
+		fprintf(stderr, "user app bind mount failed - %d\n",errno);
+		return r;
+	}
+
 	return 0;
 }
 
