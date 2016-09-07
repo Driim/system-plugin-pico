@@ -27,3 +27,14 @@ cp -arf /system-update/data/rpm/* /var/lib/rpm
 
 # Disable cynara-check
 buxton2ctl security-disable
+
+####### filesystem update #######
+rm -rf /var/lock
+ln -snf /run/lock /var/lock
+
+# Directory for compatibility
+chown root:root /opt/usr/media
+chsmack -a '_' -T /opt/usr/media
+# The operation done by generic-base.post
+chown root:root /opt/var/log
+chsmack -a '*' -t /opt/var/log
