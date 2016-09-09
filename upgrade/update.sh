@@ -23,6 +23,8 @@ else
 		${RUN} ${PATCH_DIR}/${PATCH}
 	done
 
+	${RUN} /usr/share/upgrade/update-post.sh
+
 	echo "SUCCESS: Upgrade successfully finished" > ${RESULT_FILE}
 fi
 
