@@ -1,8 +1,0 @@
-[Unit]
-Description=System update initialize service
-Requires=sysinit.target
-After=sysinit.target
-
-[Service]
-Type=simple
-ExecStart=/system-update/update-init.sh
