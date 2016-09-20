@@ -38,6 +38,7 @@
 		sym = dlsym(handle, name); \
 		if (!sym) { \
 			fprintf(stderr, "dlsym %s error\n", name); \
+			dlclose(handle); \
 			return -1; \
 		} \
 	} while (0);
@@ -159,9 +160,11 @@ static int wait_condition(void)
 	r = wait_mount_user();
 	if (r < 0) {
 		fprintf(stderr, "wait_mout_user failed\n");
+		dlclose(h);
 		return r;
 	}
 
+	dlclose(h);
 	return 0;
 }
 
