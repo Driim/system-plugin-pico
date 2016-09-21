@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* If container supports below funcs, below line should be enabled. */
-	/* support_container = (access(CONTAINER_LIB, F_OK) == 0) ? 1 : 0; */
+	support_container = (access(CONTAINER_LIB, F_OK) == 0) ? 1 : 0;
 	if (support_container) {
 		r = container_preprocess(argv[1]);
 		if (r < 0) {
