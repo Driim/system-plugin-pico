@@ -97,6 +97,14 @@ License: Apache-2.0
 %description -n system-upgrade
 Systemd offline system update activation package
 
+%package profile_ivi
+Summary: ivi specific system configuration files
+Requires: %{name} = %{version}-%{release}
+BuildArch: noarch
+
+%description profile_ivi
+This package provides ivi specific system configuration files.
+
 %prep
 %setup -q
 
@@ -123,6 +131,7 @@ mkdir -p %{buildroot}/csa
 mkdir -p %{buildroot}/initrd
 install -m 644 units/resize2fs@.service %{buildroot}%{_unitdir}
 install -m 644 units/tizen-system-env.service %{buildroot}%{_unitdir}
+install -m 644 units/ivi-network.service %{buildroot}%{_unitdir}
 
 # csa mount
 install -m 644 units/csa.mount %{buildroot}%{_unitdir}
@@ -139,6 +148,7 @@ ln -s ../resize2fs@.service %{buildroot}%{_unitdir}/basic.target.wants/resize2fs
 ln -s ../resize2fs@.service %{buildroot}%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\\x2dpartlabel-system\\x2ddata.service
 
 ln -s ../tizen-system-env.service %{buildroot}%{_unitdir}/basic.target.wants/tizen-system-env.service
+%install_service multi-user.target.wants ivi-network.service
 
 mkdir -p %{buildroot}%{_prefix}/lib/udev/rules.d/
 install -m 644 rules/51-system-plugin-exynos.rules %{buildroot}%{_prefix}/lib/udev/rules.d/
@@ -305,3 +315,7 @@ cp -a /usr/lib/systemd/system/user\@.service /usr/lib/systemd/system/__user@.ser
 /usr/bin/sed -i -e 's/ExecStart=\(.*\)/ExecStart=\/usr\/bin\/systemd_user_helper %i/' /usr/lib/systemd/system/user\@.service
 /usr/bin/sed -i -e '/RemainAfterExit=\(.*\)/d' /usr/lib/systemd/system/user\@.service
 echo 'RemainAfterExit=yes' >> /usr/lib/systemd/system/user\@.service
+
+%files profile_ivi
+%{_unitdir}/ivi-network.service
+%{_unitdir}/multi-user.target.wants/ivi-network.service

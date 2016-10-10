@@ -1,0 +1,11 @@
+[Unit]
+Description=Set static IP for ivi
+After=connman.service net-config.service
+Requires=connman.service net-config.service
+
+[Service]
+ExecStartPre=/sbin/ifconfig eth0 192.20.16.11
+ExecStart=/sbin/ifconfig eth0 up
+
+[Install]
+WantedBy=multi-user.target
