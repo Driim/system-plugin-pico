@@ -154,11 +154,6 @@ mkdir -p %{buildroot}%{_prefix}/lib/udev/rules.d/
 install -m 644 rules/51-system-plugin-exynos.rules %{buildroot}%{_prefix}/lib/udev/rules.d/
 install -m 644 rules/51-system-plugin-spreadtrum.rules %{buildroot}%{_prefix}/lib/udev/rules.d/
 
-# umount /opt
-install -m 644 units/umount-opt.service %{buildroot}%{_unitdir}
-mkdir -p %{buildroot}%{_unitdir}/local-fs-pre.target.wants
-ln -s ../umount-opt.service %{buildroot}%{_unitdir}/local-fs-pre.target.wants/umount-opt.service
-
 # fstab
 mkdir -p %{buildroot}%{_sysconfdir}
 install -m 644 etc/fstab %{buildroot}%{_sysconfdir}
@@ -240,8 +235,6 @@ systemctl daemon-reload
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dpartlabel-system\x2ddata.service
 %{_unitdir}/csa.mount
 %{_unitdir}/local-fs.target.wants/csa.mount
-%{_unitdir}/umount-opt.service
-%{_unitdir}/local-fs-pre.target.wants/umount-opt.service
 
 # ugly temporary patch for initrd wearable
 %post circle
@@ -268,8 +261,6 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
 %{_unitdir}/csa.mount
 %{_unitdir}/local-fs.target.wants/csa.mount
-%{_unitdir}/umount-opt.service
-%{_unitdir}/local-fs-pre.target.wants/umount-opt.service
 %{_unitdir}/graphical.target.wants/tizen-fstrim-user.timer
 %{_unitdir}/tizen-fstrim-user.timer
 %{_unitdir}/tizen-fstrim-user.service
