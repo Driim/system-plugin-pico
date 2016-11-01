@@ -146,6 +146,7 @@ ln -s ../resize2fs@.service %{buildroot}%{_unitdir}/basic.target.wants/resize2fs
 
 ln -s ../resize2fs@.service %{buildroot}%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\\x2dpartlabel-user.service
 ln -s ../resize2fs@.service %{buildroot}%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\\x2dpartlabel-system\\x2ddata.service
+ln -s ../resize2fs@.service %{buildroot}%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\\x2dpartlabel-rootfs.service
 
 ln -s ../tizen-system-env.service %{buildroot}%{_unitdir}/basic.target.wants/tizen-system-env.service
 %install_service multi-user.target.wants ivi-network.service
@@ -233,6 +234,7 @@ systemctl daemon-reload
 %{_sysconfdir}/fstab_initrd
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dpartlabel-user.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dpartlabel-system\x2ddata.service
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dpartlabel-rootfs.service
 %{_unitdir}/csa.mount
 %{_unitdir}/local-fs.target.wants/csa.mount
 
@@ -258,7 +260,7 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 %{_unitdir}/basic.target.wants/tizen-system-env.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dpartlabel-user.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dpartlabel-system\x2ddata.service
-%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dpartlabel-rootfs.service
 %{_unitdir}/csa.mount
 %{_unitdir}/local-fs.target.wants/csa.mount
 %{_unitdir}/graphical.target.wants/tizen-fstrim-user.timer
