@@ -1,0 +1,45 @@
+#!/bin/sh
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+
+SYSTEM_MNT=/opt
+SYS_BLK_DIR=/sys/class/block
+
+/usr/bin/mount -t proc none /proc
+/usr/bin/mount -t sysfs none /sys
+
+DISK_LIST=`ls $SYS_BLK_DIR`
+
+for BLK_NAME in $DISK_LIST
+do
+lsblk -r -n -d --output LABEL,PARTLABEL /dev/$BLK_NAME | grep -qi "system-data"
+if [ $? = "0" ] 
+then
+SYSTEM_DISK=/dev/$BLK_NAME
+break
+fi
+done
+
+if [ "$SYSTEM_DISK" == "" ]
+then
+    echo "Warning : There is no system-data partition."
+else
+    /usr/bin/mount | grep "$SYSTEM_MNT " > /dev/null
+
+    if [ $? = "0" ]
+    then
+        /usr/bin/umount -l "$SYSTEM_MNT"
+    fi
+
+    /usr/bin/mount $SYSTEM_DISK $SYSTEM_MNT
+fi
+
+INIT=/usr/lib/systemd/systemd
+if [ $$ = 1 ]; then
+        [ "$INIT" ] && exec "$INIT" "$@"
+fi
+
+echo "======================================================================"
+echo "[/sbin/init] WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo "This Message should be never printed. ($INIT execution failure?)"
+echo "======================================================================"

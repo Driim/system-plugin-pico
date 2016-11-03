@@ -105,6 +105,14 @@ BuildArch: noarch
 %description profile_ivi
 This package provides ivi specific system configuration files.
 
+%package init_wrapper
+Summary: Support init.wrapper booting.
+Requires: %{name} = %{version}-%{release}
+BuildArch: noarch
+
+%description init_wrapper
+This package provides init.wrapper and init symlink file for init wrapper booting.
+
 %prep
 %setup -q
 
@@ -184,6 +192,10 @@ mkdir -p %{buildroot}%{_unitdir}/system-update.target.wants
 install -m 644 units/offline-update.service %{buildroot}%{_unitdir}
 ln -s ../offline-update.service %{buildroot}%{_unitdir}/system-update.target.wants/offline-update.service
 ln -s %{_datadir}/upgrade %{buildroot}/system-update
+
+# init_wrapper
+mkdir -p %{buildroot}%{_sbindir}
+install -m 755 scripts/init.wrapper %{buildroot}%{_sbindir}
 
 %clean
 rm -rf %{buildroot}
@@ -312,3 +324,11 @@ echo 'RemainAfterExit=yes' >> /usr/lib/systemd/system/user\@.service
 %files profile_ivi
 %{_unitdir}/ivi-network.service
 %{_unitdir}/multi-user.target.wants/ivi-network.service
+
+
+%files init_wrapper
+%{_sbindir}/init.wrapper
+
+%posttrans init_wrapper
+rm -f /sbin/init
+ln -s /sbin/init.wrapper /sbin/init
