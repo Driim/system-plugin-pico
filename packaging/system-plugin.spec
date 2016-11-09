@@ -185,6 +185,9 @@ install -m 644 units/offline-update.service %{buildroot}%{_unitdir}
 ln -s ../offline-update.service %{buildroot}%{_unitdir}/system-update.target.wants/offline-update.service
 ln -s %{_datadir}/upgrade %{buildroot}/system-update
 
+# fixed-multi-user
+install -m 775 -D scripts/fixed-multi-user.sh %{buildroot}%{_datadir}/fixed_multiuser/fixed-multi-user.sh
+
 %clean
 rm -rf %{buildroot}
 
@@ -267,6 +270,7 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 %{_unitdir}/tizen-fstrim-user.timer
 %{_unitdir}/tizen-fstrim-user.service
 %{_bindir}/tizen-fstrim-on-charge.sh
+%{_datadir}/fixed_multiuser/fixed-multi-user.sh
 
 %files -n liblazymount
 %defattr(-,root,root,-)
