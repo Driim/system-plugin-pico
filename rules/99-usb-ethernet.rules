@@ -1,0 +1,6 @@
+# USB ETHERNET
+SUBSYSTEM!="net", GOTO="usb_ethernet_end"
+
+ACTION=="add", ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="8152", RUN+="/usr/bin/usb_net_init.sh %k"
+
+LABEL="usb_ethernet_end"

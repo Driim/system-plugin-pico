@@ -131,7 +131,6 @@ mkdir -p %{buildroot}/csa
 mkdir -p %{buildroot}/initrd
 install -m 644 units/resize2fs@.service %{buildroot}%{_unitdir}
 install -m 644 units/tizen-system-env.service %{buildroot}%{_unitdir}
-install -m 644 units/ivi-network.service %{buildroot}%{_unitdir}
 
 # csa mount
 install -m 644 units/csa.mount %{buildroot}%{_unitdir}
@@ -149,11 +148,11 @@ ln -s ../resize2fs@.service %{buildroot}%{_unitdir}/basic.target.wants/resize2fs
 ln -s ../resize2fs@.service %{buildroot}%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\\x2dpartlabel-rootfs.service
 
 ln -s ../tizen-system-env.service %{buildroot}%{_unitdir}/basic.target.wants/tizen-system-env.service
-%install_service multi-user.target.wants ivi-network.service
 
 mkdir -p %{buildroot}%{_prefix}/lib/udev/rules.d/
 install -m 644 rules/51-system-plugin-exynos.rules %{buildroot}%{_prefix}/lib/udev/rules.d/
 install -m 644 rules/51-system-plugin-spreadtrum.rules %{buildroot}%{_prefix}/lib/udev/rules.d/
+install -m 644 rules/99-usb-ethernet.rules %{buildroot}%{_prefix}/lib/udev/rules.d/
 
 # fstab
 mkdir -p %{buildroot}%{_sysconfdir}
@@ -184,6 +183,9 @@ mkdir -p %{buildroot}%{_unitdir}/system-update.target.wants
 install -m 644 units/offline-update.service %{buildroot}%{_unitdir}
 ln -s ../offline-update.service %{buildroot}%{_unitdir}/system-update.target.wants/offline-update.service
 ln -s %{_datadir}/upgrade %{buildroot}/system-update
+
+# ivi
+install -m 755 scripts/usb_net_init.sh %{buildroot}%{_bindir}
 
 # fixed-multi-user
 install -m 775 -D scripts/fixed-multi-user.sh %{buildroot}%{_datadir}/fixed_multiuser/fixed-multi-user.sh
@@ -314,5 +316,5 @@ cp -a /usr/lib/systemd/system/user\@.service /usr/lib/systemd/system/__user@.ser
 echo 'RemainAfterExit=yes' >> /usr/lib/systemd/system/user\@.service
 
 %files profile_ivi
-%{_unitdir}/ivi-network.service
-%{_unitdir}/multi-user.target.wants/ivi-network.service
+%{_prefix}/lib/udev/rules.d/99-usb-ethernet.rules
+%{_bindir}/usb_net_init.sh
