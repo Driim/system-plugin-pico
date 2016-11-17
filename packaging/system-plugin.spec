@@ -308,12 +308,13 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 %manifest systemd-user-helper.manifest
 %caps(cap_sys_admin,cap_mac_admin,cap_mac_override,cap_dac_override,cap_setgid=ei) %{_bindir}/systemd_user_helper
 
+#TODO: when uninstalling, it should be restored to original file
 %posttrans -n systemd-user-helper
 cp -a /usr/lib/systemd/system/user\@.service /usr/lib/systemd/system/__user@.service
-/usr/bin/sed -i -e 's/Type=\(.*\)/Type=simple/' /usr/lib/systemd/system/user\@.service
+/usr/bin/sed -i -e 's/Type=\(.*\)/Type=forking/' /usr/lib/systemd/system/user\@.service
 /usr/bin/sed -i -e 's/ExecStart=\(.*\)/ExecStart=\/usr\/bin\/systemd_user_helper %i/' /usr/lib/systemd/system/user\@.service
-/usr/bin/sed -i -e '/RemainAfterExit=\(.*\)/d' /usr/lib/systemd/system/user\@.service
-echo 'RemainAfterExit=yes' >> /usr/lib/systemd/system/user\@.service
+/usr/bin/sed -i -e '/PIDFile=\(.*\)/d' /usr/lib/systemd/system/user\@.service
+echo 'PIDFile=/run/user/%i/.systemd.pid' >> /usr/lib/systemd/system/user\@.service
 
 %files profile_ivi
 %{_prefix}/lib/udev/rules.d/99-usb-ethernet.rules
