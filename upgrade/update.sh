@@ -29,4 +29,4 @@ else
 fi
 
 # Reboot
-systemctl reboot
+reboot -f

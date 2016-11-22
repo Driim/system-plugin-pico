@@ -18,12 +18,11 @@ fi
 
 # Create home directory
 test ! -e /opt/usr/home && mkdir -p /opt/usr/home
-
-gum-utils --offline -u --uid 5001
+cp -af /usr/share/upgrade/data/home/owner /opt/usr/home
 
 # Copy 3.0 rpm db
 rm -rf /var/lib/rpm/*
-cp -arf /system-update/data/rpm/* /var/lib/rpm
+cp -af /usr/share/upgrade/data/rpm/* /var/lib/rpm
 
 # Disable cynara-check
 buxton2ctl security-disable
