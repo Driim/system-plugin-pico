@@ -25,6 +25,8 @@ else
 
 	${RUN} /usr/share/upgrade/update-post.sh
 
+	sync
+
 	echo "SUCCESS: Upgrade successfully finished" > ${RESULT_FILE}
 fi
 

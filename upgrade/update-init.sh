@@ -18,6 +18,7 @@ fi
 
 # Create home directory
 test ! -e /opt/usr/home && mkdir -p /opt/usr/home
+chsmack -a "_" /opt/usr/home
 cp -af /usr/share/upgrade/data/home/owner /opt/usr/home
 
 # Copy 3.0 rpm db
