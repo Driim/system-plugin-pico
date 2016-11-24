@@ -185,6 +185,7 @@ install -m 644 units/offline-update.service %{buildroot}%{_unitdir}
 ln -s ../init-update.service %{buildroot}%{_unitdir}/system-update.target.wants/init-update.service
 ln -s %{_datadir}/upgrade %{buildroot}/system-update
 install -m 644 rules/99-sdb-switch.rules %{buildroot}%{_prefix}/lib/udev/rules.d/
+ln -s ../getty.target %{buildroot}%{_unitdir}/system-update.target.wants
 
 # ivi
 install -m 755 scripts/usb_net_init.sh %{buildroot}%{_bindir}
@@ -306,6 +307,7 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 %{_unitdir}/init-update.service
 #%{_unitdir}/system-update.target.wants/offline-update.service
 %{_unitdir}/system-update.target.wants/init-update.service
+%{_unitdir}/system-update.target.wants/getty.target
 /system-update
 %{_prefix}/lib/udev/rules.d/99-sdb-switch.rules
 
