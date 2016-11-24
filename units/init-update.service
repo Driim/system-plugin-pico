@@ -2,7 +2,8 @@
 Description=System update initialize service
 Requires=sysinit.target
 After=sysinit.target
+Before=sdbd.service
 
 [Service]
-Type=simple
+Type=oneshot
 ExecStart=/system-update/update-init.sh

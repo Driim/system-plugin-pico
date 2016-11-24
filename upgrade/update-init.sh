@@ -24,8 +24,15 @@ cp -af /usr/share/upgrade/data/home/owner /opt/usr/home
 rm -rf /var/lib/rpm/*
 cp -af /usr/share/upgrade/data/rpm/* /var/lib/rpm
 
-# Disable cynara-check
-buxton2ctl security-disable
+# For sdb debugging
+/usr/share/upgrade/scripts/010.tizen-platform-config.patch.sh
+/usr/share/upgrade/scripts/011.security_upgrade.sh
+/usr/share/upgrade/scripts/100.buxton2_upgrade.sh
+
+# Prevent executing again
+mv /usr/share/upgrade/scripts/010.tizen-platform-config.patch.sh /usr/share/upgrade
+mv /usr/share/upgrade/scripts/011.security_upgrade.sh /usr/share/upgrade
+mv /usr/share/upgrade/scripts/100.buxton2_upgrade.sh /usr/share/upgrade
 
 ####### filesystem update #######
 rm -rf /var/lock
