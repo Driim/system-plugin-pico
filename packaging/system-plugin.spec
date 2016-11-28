@@ -15,7 +15,6 @@ Source2:   liblazymount.manifest
 Source3:   systemd-user-helper.manifest
 
 Requires(post): /usr/bin/systemctl
-Requires(post): /usr/bin/vconftool
 BuildRequires: pkgconfig(vconf)
 BuildRequires: pkgconfig(libsystemd)
 BuildRequires: pkgconfig(libtzplatform-config)
@@ -68,6 +67,7 @@ This package provides Circle specific system configuration files.
 %package -n liblazymount
 Summary: Library for lazy mount feature
 License: Apache-2.0
+Requires(post): /usr/bin/vconftool
 Requires: vconf
 Requires: liblazymount = %{version}
 
@@ -112,6 +112,14 @@ BuildArch: noarch
 
 %description init_wrapper
 This package provides init.wrapper and init symlink file for init wrapper booting.
+
+%package headless
+Summary: Support headless device.
+Requires: %{name} = %{version}-%{release}
+BuildArch: noarch
+
+%description headless
+This package provides the functions for headless device.
 
 %prep
 %setup -q
@@ -197,6 +205,13 @@ ln -s %{_datadir}/upgrade %{buildroot}/system-update
 mkdir -p %{buildroot}%{_sbindir}
 install -m 755 scripts/init.wrapper %{buildroot}%{_sbindir}
 
+# headless
+mkdir -p %{buildroot}%{_sbindir}
+install -m 755 scripts/sdb-mode.sh %{buildroot}%{_bindir}
+mkdir -p %{buildroot}%{_prefix}/lib/udev/rules.d/
+install -m 644 rules/99-sdb-switch.rules %{buildroot}%{_prefix}/lib/udev/rules.d/
+mkdir -p %{buildroot}%{_sysconfdir}/profile.d
+install -m 755 scripts/headless_env.sh %{buildroot}%{_sysconfdir}/profile.d
 %clean
 rm -rf %{buildroot}
 
@@ -332,3 +347,9 @@ echo 'RemainAfterExit=yes' >> /usr/lib/systemd/system/user\@.service
 %posttrans init_wrapper
 rm -f /sbin/init
 ln -s /sbin/init.wrapper /sbin/init
+
+
+%files headless
+%{_bindir}/sdb-mode.sh
+%{_prefix}/lib/udev/rules.d/99-sdb-switch.rules
+%{_sysconfdir}/profile.d/headless_env.sh
