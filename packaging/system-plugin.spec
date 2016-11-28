@@ -120,7 +120,8 @@ cp %{SOURCE3} .
 		--disable-debug-mode \
 		--disable-eng-mode
 
-%__make %{?jobs:-j%jobs}
+%__make %{?jobs:-j%jobs} \
+	CFLAGS+=-DLIBDIR=\\\"%{_libdir}\\\"
 
 %install
 rm -rf %{buildroot}

@@ -36,8 +36,8 @@
 #define LEGACY_CONTENTS_DIR "/opt/usr/media"
 #define LEGACY_APPS_DIR "/opt/usr/apps"
 
-#define LAZYMOUNT_LIB "/usr/lib/liblazymount.so.0"
-#define CONTAINER_LIB "/usr/lib/security/pam_krate.so"
+#define LAZYMOUNT_LIB LIBDIR"/liblazymount.so.0"
+#define CONTAINER_LIB LIBDIR"/security/pam_krate.so"
 
 #define LOAD_SYMBOL(handle, sym, name) \
 	do { \
