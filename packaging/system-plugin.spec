@@ -320,9 +320,12 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 %posttrans -n systemd-user-helper
 cp -a /usr/lib/systemd/system/user\@.service /usr/lib/systemd/system/__user@.service
 /usr/bin/sed -i -e 's/Type=\(.*\)/Type=forking/' /usr/lib/systemd/system/user\@.service
-/usr/bin/sed -i -e 's/ExecStart=\(.*\)/ExecStart=\/usr\/bin\/systemd_user_helper %i/' /usr/lib/systemd/system/user\@.service
+/usr/bin/sed -i -e 's/ExecStart=\(.*\)/ExecStart=\/usr\/bin\/systemd_user_helper start %i/' /usr/lib/systemd/system/user\@.service
+/usr/bin/sed -i -e '/ExecStart=\(.*\)/ a ExecStop=\/usr\/bin\/systemd_user_helper stop %i' /usr/lib/systemd/system/user\@.service
 /usr/bin/sed -i -e '/PIDFile=\(.*\)/d' /usr/lib/systemd/system/user\@.service
+/usr/bin/sed -i -e '/XDG_RUNTIME_DIR/ a Environment=XDG_RUNTIME_EXT_DIR=/run/user_ext/%i' /usr/lib/systemd/system/user\@.service
 echo 'PIDFile=/run/user/%i/.systemd.pid' >> /usr/lib/systemd/system/user\@.service
+echo "d /run/user_ext 0755 root root -" >> /usr/lib/tmpfiles.d/systemd.conf
 
 %files profile_ivi
 %{_prefix}/lib/udev/rules.d/99-usb-ethernet.rules
