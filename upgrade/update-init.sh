@@ -27,15 +27,15 @@ cp -af /usr/share/upgrade/data/rpm/* /var/lib/rpm
 
 
 # For sdb debugging
-/usr/share/upgrade/scripts/000.filesystem-pre.patch.sh
-/usr/share/upgrade/scripts/010.tizen-platform-config.patch.sh
-/usr/share/upgrade/scripts/011.dlog_upgrade.sh
-/usr/share/upgrade/scripts/011.security_upgrade.sh
-/usr/share/upgrade/scripts/100.buxton2_upgrade.sh
+/usr/share/upgrade/scripts/200.filesystem-pre.patch.sh
+/usr/share/upgrade/scripts/201.tizen-platform-config_upgrade.sh
+/usr/share/upgrade/scripts/210.dlog_upgrade.sh
+/usr/share/upgrade/scripts/201.security_upgrade.sh
+/usr/share/upgrade/scripts/500.buxton2_upgrade.sh
 
 # Prevent executing again
-mv /usr/share/upgrade/scripts/000.filesystem-pre.patch.sh        /usr/share/upgrade
-mv /usr/share/upgrade/scripts/010.tizen-platform-config.patch.sh /usr/share/upgrade
-mv /usr/share/upgrade/scripts/011.dlog_upgrade.sh                /usr/share/upgrade
-mv /usr/share/upgrade/scripts/011.security_upgrade.sh            /usr/share/upgrade
-mv /usr/share/upgrade/scripts/100.buxton2_upgrade.sh             /usr/share/upgrade
+mv /usr/share/upgrade/scripts/200.filesystem-pre.patch.sh          /usr/share/upgrade
+mv /usr/share/upgrade/scripts/201.tizen-platform-config_upgrade.sh /usr/share/upgrade
+mv /usr/share/upgrade/scripts/210.dlog_upgrade.sh                  /usr/share/upgrade
+mv /usr/share/upgrade/scripts/201.security_upgrade.sh              /usr/share/upgrade
+mv /usr/share/upgrade/scripts/500.buxton2_upgrade.sh               /usr/share/upgrade
