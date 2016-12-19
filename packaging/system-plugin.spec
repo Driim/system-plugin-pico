@@ -303,7 +303,7 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 %endif
 
 %files -n system-upgrade
-%{_datadir}/upgrade
+%{_datadir}/upgrade/*
 %{_unitdir}/offline-update.service
 %{_unitdir}/init-update.service
 #%{_unitdir}/system-update.target.wants/offline-update.service
