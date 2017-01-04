@@ -136,7 +136,8 @@ cp %{SOURCE3} .
 		--disable-debug-mode \
 		--disable-eng-mode
 
-%__make %{?jobs:-j%jobs}
+%__make %{?jobs:-j%jobs} \
+	CFLAGS+=-DLIBDIR=\\\"%{_libdir}\\\"
 
 %install
 rm -rf %{buildroot}
@@ -147,7 +148,6 @@ mkdir -p %{buildroot}/csa
 mkdir -p %{buildroot}/initrd
 install -m 644 units/resize2fs@.service %{buildroot}%{_unitdir}
 install -m 644 units/tizen-system-env.service %{buildroot}%{_unitdir}
-install -m 644 units/ivi-network.service %{buildroot}%{_unitdir}
 
 # csa mount
 install -m 644 units/csa.mount %{buildroot}%{_unitdir}
@@ -165,11 +165,11 @@ ln -s ../resize2fs@.service %{buildroot}%{_unitdir}/basic.target.wants/resize2fs
 ln -s ../resize2fs@.service %{buildroot}%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\\x2dpartlabel-rootfs.service
 
 ln -s ../tizen-system-env.service %{buildroot}%{_unitdir}/basic.target.wants/tizen-system-env.service
-%install_service multi-user.target.wants ivi-network.service
 
 mkdir -p %{buildroot}%{_prefix}/lib/udev/rules.d/
 install -m 644 rules/51-system-plugin-exynos.rules %{buildroot}%{_prefix}/lib/udev/rules.d/
 install -m 644 rules/51-system-plugin-spreadtrum.rules %{buildroot}%{_prefix}/lib/udev/rules.d/
+install -m 644 rules/99-usb-ethernet.rules %{buildroot}%{_prefix}/lib/udev/rules.d/
 
 # fstab
 mkdir -p %{buildroot}%{_sysconfdir}
@@ -197,9 +197,16 @@ install -m 755 scripts/tizen-fstrim-on-charge.sh %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_datadir}
 cp -r upgrade %{buildroot}%{_datadir}
 mkdir -p %{buildroot}%{_unitdir}/system-update.target.wants
+install -m 644 units/init-update.service %{buildroot}%{_unitdir}
 install -m 644 units/offline-update.service %{buildroot}%{_unitdir}
-ln -s ../offline-update.service %{buildroot}%{_unitdir}/system-update.target.wants/offline-update.service
-ln -s %{_datadir}/upgrade %{buildroot}/system-update
+ln -s ../init-update.service %{buildroot}%{_unitdir}/system-update.target.wants/init-update.service
+ln -s ../getty.target %{buildroot}%{_unitdir}/system-update.target.wants
+
+# ivi
+install -m 755 scripts/usb_net_init.sh %{buildroot}%{_bindir}
+
+# fixed-multi-user
+install -m 775 -D scripts/fixed-multi-user.sh %{buildroot}%{_datadir}/fixed_multiuser/fixed-multi-user.sh
 
 # init_wrapper
 mkdir -p %{buildroot}%{_sbindir}
@@ -294,6 +301,7 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 %{_unitdir}/tizen-fstrim-user.timer
 %{_unitdir}/tizen-fstrim-user.service
 %{_bindir}/tizen-fstrim-on-charge.sh
+%{_datadir}/fixed_multiuser/fixed-multi-user.sh
 
 %files -n liblazymount
 %defattr(-,root,root,-)
@@ -320,25 +328,31 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 %endif
 
 %files -n system-upgrade
-%{_datadir}/upgrade
+%{_datadir}/upgrade/*
 %{_unitdir}/offline-update.service
-%{_unitdir}/system-update.target.wants/offline-update.service
-/system-update
+%{_unitdir}/init-update.service
+#%{_unitdir}/system-update.target.wants/offline-update.service
+%{_unitdir}/system-update.target.wants/init-update.service
+%{_unitdir}/system-update.target.wants/getty.target
 
 %files -n systemd-user-helper
 %manifest systemd-user-helper.manifest
 %caps(cap_sys_admin,cap_mac_admin,cap_mac_override,cap_dac_override,cap_setgid=ei) %{_bindir}/systemd_user_helper
 
+#TODO: when uninstalling, it should be restored to original file
 %posttrans -n systemd-user-helper
 cp -a /usr/lib/systemd/system/user\@.service /usr/lib/systemd/system/__user@.service
-/usr/bin/sed -i -e 's/Type=\(.*\)/Type=simple/' /usr/lib/systemd/system/user\@.service
-/usr/bin/sed -i -e 's/ExecStart=\(.*\)/ExecStart=\/usr\/bin\/systemd_user_helper %i/' /usr/lib/systemd/system/user\@.service
-/usr/bin/sed -i -e '/RemainAfterExit=\(.*\)/d' /usr/lib/systemd/system/user\@.service
-echo 'RemainAfterExit=yes' >> /usr/lib/systemd/system/user\@.service
+/usr/bin/sed -i -e 's/Type=\(.*\)/Type=forking/' /usr/lib/systemd/system/user\@.service
+/usr/bin/sed -i -e 's/ExecStart=\(.*\)/ExecStart=\/usr\/bin\/systemd_user_helper start %i/' /usr/lib/systemd/system/user\@.service
+/usr/bin/sed -i -e '/ExecStart=\(.*\)/ a ExecStop=\/usr\/bin\/systemd_user_helper stop %i' /usr/lib/systemd/system/user\@.service
+/usr/bin/sed -i -e '/PIDFile=\(.*\)/d' /usr/lib/systemd/system/user\@.service
+/usr/bin/sed -i -e '/XDG_RUNTIME_DIR/ a Environment=XDG_RUNTIME_EXT_DIR=/run/user_ext/%i' /usr/lib/systemd/system/user\@.service
+echo 'PIDFile=/run/user/%i/.systemd.pid' >> /usr/lib/systemd/system/user\@.service
+echo "d /run/user_ext 0755 root root -" >> /usr/lib/tmpfiles.d/systemd.conf
 
 %files profile_ivi
-%{_unitdir}/ivi-network.service
-%{_unitdir}/multi-user.target.wants/ivi-network.service
+%{_prefix}/lib/udev/rules.d/99-usb-ethernet.rules
+%{_bindir}/usb_net_init.sh
 
 
 %files init_wrapper

@@ -1,7 +1,7 @@
 [Unit]
 Description=System update script service
 Requires=sysinit.target
-After=sysinit.target
+After=sysinit.target init-update.service
 
 [Service]
 Type=simple
