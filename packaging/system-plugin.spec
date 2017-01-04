@@ -90,13 +90,6 @@ License: Apache-2.0
 %description -n systemd-user-helper
 Systemd user launch helper supports Tizen specific feature like directory compatibility and container.
 
-%package -n system-upgrade
-Summary: System upgrade available patch
-License: Apache-2.0
-
-%description -n system-upgrade
-Systemd offline system update activation package
-
 %package profile_ivi
 Summary: ivi specific system configuration files
 Requires: %{name} = %{version}-%{release}
@@ -192,16 +185,6 @@ ln -s ../tizen-fstrim-user.timer %{buildroot}%{_unitdir}/graphical.target.wants/
 install -m 644 units/tizen-fstrim-user.service %{buildroot}%{_unitdir}
 mkdir -p %{buildroot}%{_bindir}
 install -m 755 scripts/tizen-fstrim-on-charge.sh %{buildroot}%{_bindir}
-
-# upgrade
-mkdir -p %{buildroot}%{_datadir}
-cp -r upgrade %{buildroot}%{_datadir}
-mkdir -p %{buildroot}%{_unitdir}/system-update.target.wants
-install -m 644 units/init-update.service %{buildroot}%{_unitdir}
-install -m 644 units/offline-update.service %{buildroot}%{_unitdir}
-ln -s ../init-update.service %{buildroot}%{_unitdir}/system-update.target.wants/init-update.service
-ln -s ../getty.target %{buildroot}%{_unitdir}/system-update.target.wants
-ln -s ../cynara.socket %{buildroot}%{_unitdir}/system-update.target.wants
 
 # ivi
 install -m 755 scripts/usb_net_init.sh %{buildroot}%{_bindir}
@@ -327,15 +310,6 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 %if ! %{temp_wait_mount}
 %{_bindir}/test_lazymount
 %endif
-
-%files -n system-upgrade
-%{_datadir}/upgrade/*
-%{_unitdir}/offline-update.service
-%{_unitdir}/init-update.service
-#%{_unitdir}/system-update.target.wants/offline-update.service
-%{_unitdir}/system-update.target.wants/init-update.service
-%{_unitdir}/system-update.target.wants/getty.target
-%{_unitdir}/system-update.target.wants/cynara.socket
 
 %files -n systemd-user-helper
 %manifest systemd-user-helper.manifest
