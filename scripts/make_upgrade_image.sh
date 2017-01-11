@@ -6,7 +6,7 @@
 
 # For sdb debugging
 
-sdb_debugging=1
+sdb_debugging=0
 sdb_rule='SUBSYSTEM=="switch", ATTR{name}=="usb_cable", ATTR{state}=="1", RUN+="/usr/bin/direct_set_debug.sh --sdb-set"\nSUBSYSTEM=="switch", ATTR{name}=="usb_cable", ATTR{state}=="0", RUN+="/usr/bin/direct_set_debug.sh --sdb-unset"'
 
 # Back up /home/owner & rpm db
