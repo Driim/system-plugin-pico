@@ -108,7 +108,7 @@ static int mount_user_ext(char *username)
 	}
 
 	if (mac_smack_use())
-		r = asprintf(&mount_option, "mode=0750,smackfstransmute=System::Run,uid=%d,gid=%d,size=%s", mnt_uid, mnt_gid, MOUNT_SIZE);
+		r = asprintf(&mount_option, "mode=0750,smackfsroot=*,uid=%d,gid=%d,size=%s", mnt_uid, mnt_gid, MOUNT_SIZE);
 	else
 		r = asprintf(&mount_option, "mode=0750,uid=%d,gid=%d,size=%s", mnt_uid, mnt_gid, MOUNT_SIZE);
 
