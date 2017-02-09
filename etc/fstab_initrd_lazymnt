@@ -1,6 +1,6 @@
 # In case of using MCD initrd, / and /opt is already mounted by initrd
 # Thus, this patch is temporary files for wearable.
 # Basically, initrd should consider this issue.
-# <file system> <mount point>   <type>  <options>        <dump> <pass>
-/dev/root       /               ext4    defaults,noatime 0      1
-PARTLABEL=system-data  /opt     ext4    defaults,noatime 0      2
+# <file system> <mount point>   <type>  <options>           <dump> <pass>
+/dev/root       /               ext4    defaults,noatime,ro 0      1
+PARTLABEL=system-data  /opt     ext4    defaults,noatime    0      2
