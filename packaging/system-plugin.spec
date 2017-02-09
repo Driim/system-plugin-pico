@@ -12,12 +12,10 @@ License:   Apache-2.0
 Source0:   %{name}-%{version}.tar.bz2
 Source1:   %{name}.manifest
 Source2:   liblazymount.manifest
-Source3:   systemd-user-helper.manifest
 
 Requires(post): /usr/bin/systemctl
 BuildRequires: pkgconfig(vconf)
 BuildRequires: pkgconfig(libsystemd)
-BuildRequires: pkgconfig(libtzplatform-config)
 
 %description
 This package provides target specific system configuration files.
@@ -83,13 +81,6 @@ Requires: liblazymount = %{version}
 %description -n liblazymount-devel
 Development library for lazy mount feature.It supports some interface functions.
 
-%package -n systemd-user-helper
-Summary: Systemd user launch helper for supporting Tizen specific feature
-License: Apache-2.0
-
-%description -n systemd-user-helper
-Systemd user launch helper supports Tizen specific feature like directory compatibility and container.
-
 %package profile_ivi
 Summary: ivi specific system configuration files
 Requires: %{name} = %{version}-%{release}
@@ -120,7 +111,6 @@ This package provides the functions for headless device.
 %build
 cp %{SOURCE1} .
 cp %{SOURCE2} .
-cp %{SOURCE3} .
 
 ./autogen.sh
 %reconfigure \
@@ -310,21 +300,6 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 %if ! %{temp_wait_mount}
 %{_bindir}/test_lazymount
 %endif
-
-%files -n systemd-user-helper
-%manifest systemd-user-helper.manifest
-%caps(cap_sys_admin,cap_mac_admin,cap_mac_override,cap_dac_override,cap_setgid=ei) %{_bindir}/systemd_user_helper
-
-#TODO: when uninstalling, it should be restored to original file
-%posttrans -n systemd-user-helper
-cp -a /usr/lib/systemd/system/user\@.service /usr/lib/systemd/system/__user@.service
-/usr/bin/sed -i -e 's/Type=\(.*\)/Type=forking/' /usr/lib/systemd/system/user\@.service
-/usr/bin/sed -i -e 's/ExecStart=\(.*\)/ExecStart=\/usr\/bin\/systemd_user_helper start %i/' /usr/lib/systemd/system/user\@.service
-/usr/bin/sed -i -e '/ExecStart=\(.*\)/ a ExecStop=\/usr\/bin\/systemd_user_helper stop %i' /usr/lib/systemd/system/user\@.service
-/usr/bin/sed -i -e '/PIDFile=\(.*\)/d' /usr/lib/systemd/system/user\@.service
-/usr/bin/sed -i -e '/XDG_RUNTIME_DIR/ a Environment=XDG_RUNTIME_EXT_DIR=/run/user_ext/%i' /usr/lib/systemd/system/user\@.service
-echo 'PIDFile=/run/user/%i/.systemd.pid' >> /usr/lib/systemd/system/user\@.service
-echo "d /run/user_ext 0755 root root -" >> /usr/lib/tmpfiles.d/systemd.conf
 
 %files profile_ivi
 %{_prefix}/lib/udev/rules.d/99-usb-ethernet.rules
