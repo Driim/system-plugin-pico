@@ -5,33 +5,50 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin
 SYSTEM_MNT=/opt
 SYS_BLK_DIR=/sys/class/block
 
-/usr/bin/mount -t proc none /proc
-/usr/bin/mount -t sysfs none /sys
+mount -o nosuid,strictatime,mode=755 -t devtmpfs devtmpfs /dev
+mount -o nosuid,noexec,nodev -t sysfs sysfs /sys
+mount -o nosuid,noexec,nodev -t proc proc /proc
 
-DISK_LIST=`ls $SYS_BLK_DIR`
-
-for BLK_NAME in $DISK_LIST
-do
-lsblk -r -n -d --output LABEL,PARTLABEL /dev/$BLK_NAME | grep -qi "system-data"
-if [ $? = "0" ] 
+ROOTFS=`/sbin/blkid -L rootfs`
+if [ x$ROOTFS = "x" ]
 then
-SYSTEM_DISK=/dev/$BLK_NAME
-break
+ROOTFS=`/sbin/blkid -t PARTLABEL=rootfs -o device`
 fi
-done
 
-if [ "$SYSTEM_DISK" == "" ]
+DATAFS=`/sbin/blkid -L system-data`
+if [ x$DATAFS = "x" ]
 then
-    echo "Warning : There is no system-data partition."
+DATAFS=`/sbin/blkid -t PARTLABEL=system-data -o device`
+fi
+
+if [ "$ROOTFS" == "" ]
+then
+    echo "Warning : There is no rootfs partition."
 else
-    /usr/bin/mount | grep "$SYSTEM_MNT " > /dev/null
+    /usr/bin/mount | grep "$ROOTFS " > /dev/null
 
     if [ $? = "0" ]
     then
-        /usr/bin/umount -l "$SYSTEM_MNT"
+        /usr/bin/mount -o remount,rw $ROOTFS
     fi
 
-    /usr/bin/mount $SYSTEM_DISK $SYSTEM_MNT
+    /sbin/fsck $ROOTFS
+    /sbin/resize2fs -f $ROOTFS
+fi
+
+
+if [ "$DATAFS" == "" ]
+then
+    echo "Warning : There is no system-data partition."
+else
+    /usr/bin/mount | grep "$DATAFS " > /dev/null
+
+    if [ $? = "0" ]
+    then
+        /usr/bin/umount -l "DATAFS"
+    fi
+
+    /usr/bin/mount $DATAFS $SYSTEM_MNT
 fi
 
 INIT=/usr/lib/systemd/systemd
@@ -43,3 +60,4 @@ echo "======================================================================"
 echo "[/sbin/init] WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 echo "This Message should be never printed. ($INIT execution failure?)"
 echo "======================================================================"
+exec /bin/sh
