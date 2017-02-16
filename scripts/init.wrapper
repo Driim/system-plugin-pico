@@ -9,35 +9,31 @@ mount -o nosuid,strictatime,mode=755 -t devtmpfs devtmpfs /dev
 mount -o nosuid,noexec,nodev -t sysfs sysfs /sys
 mount -o nosuid,noexec,nodev -t proc proc /proc
 
+#Find devices with label or partlabel
 ROOTFS=`/sbin/blkid -L rootfs`
 if [ x$ROOTFS = "x" ]
 then
-ROOTFS=`/sbin/blkid -t PARTLABEL=rootfs -o device`
+    ROOTFS=`/sbin/blkid -t PARTLABEL=rootfs -o device`
 fi
 
 DATAFS=`/sbin/blkid -L system-data`
 if [ x$DATAFS = "x" ]
 then
-DATAFS=`/sbin/blkid -t PARTLABEL=system-data -o device`
+    DATAFS=`/sbin/blkid -t PARTLABEL=system-data -o device`
 fi
 
-if [ "$ROOTFS" == "" ]
+#Fsck, resize, mount devices
+if [ x$ROOTFS = "x" ]
 then
     echo "Warning : There is no rootfs partition."
 else
-    /usr/bin/mount | grep "$ROOTFS " > /dev/null
-
-    if [ $? = "0" ]
-    then
-        /usr/bin/mount -o remount,rw $ROOTFS
-    fi
-
-    /sbin/fsck $ROOTFS
+    /sbin/fsck -y $ROOTFS
+    /usr/bin/mount -o remount,rw $ROOTFS
     /sbin/resize2fs -f $ROOTFS
+    /usr/bin/mount -o remount,ro $ROOTFS
 fi
 
-
-if [ "$DATAFS" == "" ]
+if [ x$DATAFS = "x" ]
 then
     echo "Warning : There is no system-data partition."
 else
@@ -45,9 +41,10 @@ else
 
     if [ $? = "0" ]
     then
-        /usr/bin/umount -l "DATAFS"
+        /usr/bin/umount -l "$DATAFS"
     fi
-
+    /sbin/fsck -y $DATAFS
+    /sbin/resize2fs -f $DATAFS
     /usr/bin/mount $DATAFS $SYSTEM_MNT
 fi
 
@@ -58,6 +55,6 @@ fi
 
 echo "======================================================================"
 echo "[/sbin/init] WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-echo "This Message should be never printed. ($INIT execution failure?)"
+echo "This Message should never be printed. ($INIT execution failure?)"
 echo "======================================================================"
 exec /bin/sh
