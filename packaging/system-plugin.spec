@@ -201,6 +201,7 @@ install -m 644 units/init-update.service %{buildroot}%{_unitdir}
 install -m 644 units/offline-update.service %{buildroot}%{_unitdir}
 ln -s ../init-update.service %{buildroot}%{_unitdir}/system-update.target.wants/init-update.service
 ln -s ../getty.target %{buildroot}%{_unitdir}/system-update.target.wants
+ln -s ../cynara.socket %{buildroot}%{_unitdir}/system-update.target.wants
 
 # ivi
 install -m 755 scripts/usb_net_init.sh %{buildroot}%{_bindir}
@@ -334,6 +335,7 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 #%{_unitdir}/system-update.target.wants/offline-update.service
 %{_unitdir}/system-update.target.wants/init-update.service
 %{_unitdir}/system-update.target.wants/getty.target
+%{_unitdir}/system-update.target.wants/cynara.socket
 
 %files -n systemd-user-helper
 %manifest systemd-user-helper.manifest
