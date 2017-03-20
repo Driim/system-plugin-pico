@@ -14,6 +14,7 @@ Source1:   %{name}.manifest
 Source2:   liblazymount.manifest
 
 Requires(post): /usr/bin/systemctl
+Requires(post): /usr/bin/udevadm
 BuildRequires: pkgconfig(vconf)
 BuildRequires: pkgconfig(libsystemd)
 
@@ -154,6 +155,9 @@ install -m 644 rules/51-system-plugin-exynos.rules %{buildroot}%{_prefix}/lib/ud
 install -m 644 rules/51-system-plugin-spreadtrum.rules %{buildroot}%{_prefix}/lib/udev/rules.d/
 install -m 644 rules/99-usb-ethernet.rules %{buildroot}%{_prefix}/lib/udev/rules.d/
 
+mkdir -p %{buildroot}%{_prefix}/lib/udev/hwdb.d/
+install -m 644 rules/60-evdev.hwdb %{buildroot}%{_prefix}/lib/udev/hwdb.d/
+
 # fstab
 mkdir -p %{buildroot}%{_sysconfdir}
 install -m 644 etc/fstab %{buildroot}%{_sysconfdir}
@@ -219,6 +223,10 @@ systemctl daemon-reload
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
 %{_sysconfdir}/fstab
+%{_prefix}/lib/udev/hwdb.d/60-evdev.hwdb
+
+%post u3
+%{_prefix}/bin/udevadm hwdb --update
 
 %files n4
 %manifest %{name}.manifest
