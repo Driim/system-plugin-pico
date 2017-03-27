@@ -30,6 +30,14 @@ BuildArch: noarch
 %description u3
 This package provides U3/XU3 specific system configuration files.
 
+%package rpi3
+Summary:  RPi3 specific system configuration files
+Requires: %{name} = %{version}-%{release}
+BuildArch: noarch
+
+%description rpi3
+This package provides RPi3 specific system configuration files.
+
 %package n4
 Summary:  Note4 specific system configuration files
 Requires: %{name} = %{version}-%{release}
@@ -226,6 +234,17 @@ systemctl daemon-reload
 %{_prefix}/lib/udev/hwdb.d/60-evdev.hwdb
 
 %post u3
+%{_prefix}/bin/udevadm hwdb --update
+
+%files rpi3
+%manifest %{name}.manifest
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
+%{_sysconfdir}/fstab
+%{_prefix}/lib/udev/hwdb.d/60-evdev.hwdb
+
+%post rpi3
 %{_prefix}/bin/udevadm hwdb --update
 
 %files n4
