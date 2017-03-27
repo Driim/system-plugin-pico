@@ -73,7 +73,6 @@ This package provides Circle specific system configuration files.
 
 %package -n liblazymount
 Summary: Library for lazy mount feature
-License: Apache-2.0
 Requires(post): /usr/bin/vconftool
 Requires: vconf
 Requires: liblazymount = %{version}
@@ -83,7 +82,6 @@ Library for lazy mount feature. It supports some interface functions.
 
 %package -n liblazymount-devel
 Summary: Development library for lazy mount feature
-License:  Apache-2.0
 Requires: vconf
 Requires: liblazymount = %{version}
 
@@ -227,6 +225,7 @@ systemctl daemon-reload
 
 %files u3
 %manifest %{name}.manifest
+%license LICENSE.Apache-2.0
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
@@ -238,6 +237,7 @@ systemctl daemon-reload
 
 %files rpi3
 %manifest %{name}.manifest
+%license LICENSE.Apache-2.0
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
@@ -249,6 +249,7 @@ systemctl daemon-reload
 
 %files n4
 %manifest %{name}.manifest
+%license LICENSE.Apache-2.0
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
@@ -260,10 +261,12 @@ systemctl daemon-reload
 
 %files exynos
 %manifest %{name}.manifest
+%license LICENSE.Apache-2.0
 %{_prefix}/lib/udev/rules.d/51-system-plugin-exynos.rules
 
 %files circle
 %manifest %{name}.manifest
+%license LICENSE.Apache-2.0
 /initrd
 /csa
 %{_sysconfdir}/fstab_initrd
@@ -287,6 +290,7 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 
 %files spreadtrum
 %manifest %{name}.manifest
+%license LICENSE.Apache-2.0
 /initrd
 /csa
 %{_prefix}/lib/udev/rules.d/51-system-plugin-spreadtrum.rules
@@ -308,6 +312,7 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 %defattr(-,root,root,-)
 %{_libdir}/liblazymount.so.*
 %manifest liblazymount.manifest
+%license LICENSE.Apache-2.0
 %{_unitdir}/basic.target.wants/lazy_mount.path
 %{_unitdir}/lazy_mount.path
 %{_unitdir}/lazy_mount.service
@@ -329,19 +334,20 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 %endif
 
 %files profile_ivi
+%license LICENSE.Apache-2.0
 %{_prefix}/lib/udev/rules.d/99-usb-ethernet.rules
 %{_bindir}/usb_net_init.sh
 
-
 %files init_wrapper
+%license LICENSE.Apache-2.0
 %{_sbindir}/init.wrapper
 
 %posttrans init_wrapper
 rm -f /sbin/init
 ln -s /sbin/init.wrapper /sbin/init
 
-
 %files headless
+%license LICENSE.Apache-2.0
 %{_bindir}/sdb-mode.sh
 %{_prefix}/lib/udev/rules.d/99-sdb-switch.rules
 %{_sysconfdir}/profile.d/headless_env.sh
