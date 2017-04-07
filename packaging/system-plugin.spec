@@ -172,6 +172,7 @@ install -m 644 etc/fstab_initrd %{buildroot}%{_sysconfdir}
 # lazymnt
 install -m 644 etc/fstab_lazymnt %{buildroot}%{_sysconfdir}
 install -m 644 etc/fstab_initrd_lazymnt %{buildroot}%{_sysconfdir}
+install -m 644 etc/fstab_2part %{buildroot}%{_sysconfdir}
 %if %{temp_wait_mount}
 mkdir -p %{buildroot}%{_unitdir_user}/basic.target.wants
 install -m 644 units/wait-user-mount.service %{buildroot}%{_unitdir_user}
@@ -241,11 +242,13 @@ systemctl daemon-reload
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
-%{_sysconfdir}/fstab
+%{_sysconfdir}/fstab_2part
 %{_prefix}/lib/udev/hwdb.d/60-evdev.hwdb
 
 %post rpi3
 %{_prefix}/bin/udevadm hwdb --update
+rm %{_sysconfdir}/fstab
+mv %{_sysconfdir}/fstab_2part %{_sysconfdir}/fstab
 
 %files n4
 %manifest %{name}.manifest
