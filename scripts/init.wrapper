@@ -4,6 +4,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin
 
 SYSTEM_MNT=/opt
 SYS_BLK_DIR=/sys/class/block
+MODULES_MNT=/usr/lib/modules
 
 mount -o nosuid,strictatime,mode=755 -t devtmpfs devtmpfs /dev
 mount -o nosuid,noexec,nodev -t sysfs sysfs /sys
@@ -14,6 +15,12 @@ ROOTFS=`/sbin/blkid -L rootfs`
 if [ x$ROOTFS = "x" ]
 then
     ROOTFS=`/sbin/blkid -t PARTLABEL=rootfs -o device`
+fi
+
+MODULES=`/sbin/blkid -L modules`
+if [ x$MODULES = "x" ]
+then
+    MODULES=`/sbin/blkid -t PARTLABEL=module -o device`
 fi
 
 DATAFS=`/sbin/blkid -L system-data`
@@ -31,6 +38,14 @@ else
     /usr/bin/mount -o remount,rw $ROOTFS
     /sbin/resize2fs -f $ROOTFS
     /usr/bin/mount -o remount,ro $ROOTFS
+fi
+
+if [ x$MODULES = "x" ]
+    echo "Warning : There is no modules partition."
+then
+    /sbin/resize2fs -f $MODULES
+    /sbin/fsck -y $MODULES
+    /bin/mount $MODULES $MODULES_MNT
 fi
 
 if [ x$DATAFS = "x" ]
