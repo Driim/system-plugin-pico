@@ -75,7 +75,6 @@ This package provides Circle specific system configuration files.
 Summary: Library for lazy mount feature
 Requires(post): /usr/bin/vconftool
 Requires: vconf
-Requires: liblazymount = %{version}
 
 %description -n liblazymount
 Library for lazy mount feature. It supports some interface functions.
