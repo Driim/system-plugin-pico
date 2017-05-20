@@ -328,6 +328,7 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 %files -n liblazymount-devel
 %defattr(-,root,root,-)
 %manifest liblazymount.manifest
+%license LICENSE.Apache-2.0
 %{_libdir}/liblazymount.so
 %{_includedir}/lazymount/lazy_mount.h
 %{_libdir}/pkgconfig/liblazymount.pc
