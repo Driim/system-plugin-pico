@@ -38,6 +38,14 @@ BuildArch: noarch
 %description rpi3
 This package provides RPi3 specific system configuration files.
 
+%package iot
+Summary:  IoT specific system configuration files
+Requires: %{name} = %{version}-%{release}
+BuildArch: noarch
+
+%description iot
+This package provides IoT specific system configuration files.
+
 %package n4
 Summary:  Note4 specific system configuration files
 Requires: %{name} = %{version}-%{release}
@@ -241,10 +249,22 @@ systemctl daemon-reload
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
-%{_sysconfdir}/fstab_2part
+%{_sysconfdir}/fstab
 %{_prefix}/lib/udev/hwdb.d/60-evdev.hwdb
 
 %post rpi3
+%{_prefix}/bin/udevadm hwdb --update
+
+%files iot
+%manifest %{name}.manifest
+%license LICENSE.Apache-2.0
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
+%{_sysconfdir}/fstab_2part
+%{_prefix}/lib/udev/hwdb.d/60-evdev.hwdb
+
+%post iot
 %{_prefix}/bin/udevadm hwdb --update
 rm %{_sysconfdir}/fstab
 mv %{_sysconfdir}/fstab_2part %{_sysconfdir}/fstab
