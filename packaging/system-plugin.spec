@@ -41,6 +41,7 @@ This package provides RPi3 specific system configuration files.
 %package iot
 Summary:  IoT specific system configuration files
 Requires: %{name} = %{version}-%{release}
+Requires: pkgconfig(dbus-1)
 BuildArch: noarch
 
 %description iot
@@ -268,6 +269,13 @@ systemctl daemon-reload
 %{_prefix}/bin/udevadm hwdb --update
 rm %{_sysconfdir}/fstab
 mv %{_sysconfdir}/fstab_2part %{_sysconfdir}/fstab
+
+%posttrans iot
+rm -f %{_bindir}/dbus-cleanup-sockets
+rm -f %{_bindir}/dbus-run-session
+rm -f %{_bindir}/dbus-test-tool
+rm -f %{_bindir}/dbus-update-activation-environment
+rm -f %{_bindir}/dbus-uuidgen
 
 %files n4
 %manifest %{name}.manifest
