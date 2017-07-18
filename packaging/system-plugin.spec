@@ -271,11 +271,14 @@ rm %{_sysconfdir}/fstab
 mv %{_sysconfdir}/fstab_2part %{_sysconfdir}/fstab
 
 %posttrans iot
+# platform/upstream/dbus
 rm -f %{_bindir}/dbus-cleanup-sockets
 rm -f %{_bindir}/dbus-run-session
 rm -f %{_bindir}/dbus-test-tool
 rm -f %{_bindir}/dbus-update-activation-environment
 rm -f %{_bindir}/dbus-uuidgen
+# platform/upstream/e2fsprogs
+rm -f %{_sbindir}/e4crypt
 
 %files n4
 %manifest %{name}.manifest
