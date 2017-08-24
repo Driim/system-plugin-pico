@@ -220,7 +220,6 @@ systemctl daemon-reload
 
 %post -n liblazymount
 /sbin/ldconfig
-/usr/bin/vconftool set -f -t int db/system/lazy_mount_show_ui 0
 systemctl daemon-reload
 
 %postun -n liblazymount  -p /sbin/ldconfig
