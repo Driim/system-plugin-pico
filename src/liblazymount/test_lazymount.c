@@ -9,45 +9,38 @@ int get_input()
 	int data;
 	int i = 0;
 	char c_data[2];
-	while(1)
-	{
+	while (1) {
 	    data = getchar();
-		if( i < 2 )
-		{
+		if (i < 2)
 			c_data[i] = (char)data;
-		}
 		i++;
-		if(data == 10 || data == 13)
-		{
+		if (data == 10 || data == 13)
 			break;
-		}
 	}
-	if( i > 2 )
-	{
+	if (i > 2)
 		return -1;
-	}
+
 	c_data[1] = 0;
 	return atoi(c_data);
 }
 
 int main(int argc, char **argv)
 {
-    int data;
+	int data;
 	int sl_ret;
 	int i = 0;
 	if (argc == 2 && strncmp(argv[1], "wait", 5) == 0) {
-	    for ( i = 0 ; i < 3 ; i++ ) {
+		for (i = 0 ; i < 3 ; i++) {
 			sl_ret = wait_mount_user();
 			if (sl_ret != 0) continue;
 			else break;
 		}
 
-		if ( i == 3 ) return -1;
+		if (i == 3) return -1;
 		sd_notify(0, "READY=1");
 		return 0;
 	}
-	while(1)
-	{
+	while (1) {
 		printf("Test\n");
 		printf("1. get_need_ui_for_lazy_mount()\n");
 		printf("2. do_mount_user()\n");
@@ -56,8 +49,7 @@ int main(int argc, char **argv)
 		printf("Select test : ");
 		data = get_input();
 
-		switch(data)
-		{
+		switch (data) {
 		case 1:
 			sl_ret = get_need_ui_for_lazy_mount();
 		    printf("get_need_ui_for_lazy_mount() returns %d\n", sl_ret);

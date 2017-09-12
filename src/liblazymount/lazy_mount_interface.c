@@ -39,12 +39,12 @@
 #define LAZY_MOUNT_CHECK_FILE LAZY_MOUNT_CHECK_DIR "/" UNLOCK_MNT_STR
 
 #define EVENT_NAME_MAX 256
-#define EVENT_SIZE  ( sizeof (struct inotify_event) )
-#define EVENT_BUF_LEN     ( 512 * ( EVENT_SIZE + EVENT_NAME_MAX ) )
+#define EVENT_SIZE  (sizeof(struct inotify_event))
+#define EVENT_BUF_LEN     (512 * (EVENT_SIZE + EVENT_NAME_MAX))
 
 /* Enumerate list of FDs to poll */
 enum {
-	FD_POLL_INOTIFY=0,
+	FD_POLL_INOTIFY = 0,
 	FD_POLL_MAX
 };
 
@@ -53,14 +53,10 @@ int get_need_ui_for_lazy_mount()
 	int sl_result = 0;
 	/* get touchkey light duration setting */
 	if (vconf_get_int(VCONFKEY_SYSTEM_LAZY_MOUNT_SHOW_UI, &sl_result) < 0)
-	{
 		return DEFAULT_VALUE_LAZY_MOUNT_SHOW_UI;
-	}
 
-	if(sl_result != 1 && sl_result != 0)
-	{
+	if (sl_result != 1 && sl_result != 0)
 		return DEFAULT_VALUE_LAZY_MOUNT_SHOW_UI;
-	}
 
 	return sl_result;
 }
@@ -71,9 +67,7 @@ int do_mount_user()
 
 	f = fopen(LAZY_MOUNT_FILE, "w");
 	if (!f)
-	{
 		return -errno;
-	}
 
 	fclose(f);
 	return 0;
@@ -89,53 +83,42 @@ int wait_mount_user()
 
 	fd = access(LAZY_MOUNT_CHECK_FILE, F_OK);
 
-	if(fd == 0)
-	{
+	if (fd == 0)
 		return 0;
-	}
 
 	fd = inotify_init();
 
-	if(fd < 0)
-	{
+	if (fd < 0)
 		return -errno;
-	}
 
 	wd = inotify_add_watch(fd, LAZY_MOUNT_CHECK_DIR, IN_CREATE|IN_MODIFY|IN_ATTRIB);
 
 	fds[FD_POLL_INOTIFY].fd = fd;
 	fds[FD_POLL_INOTIFY].events = POLLIN;
 
-	while(1)
-	{
-		if(poll(fds, FD_POLL_MAX, -1) < 0)
-		{
+	while (1) {
+		if (poll(fds, FD_POLL_MAX, -1) < 0) {
 			inotify_rm_watch(fd, wd);
 			close(fd);
 			return -errno;
 		}
-		if(fds[FD_POLL_INOTIFY].revents & POLLIN)
-		{
+
+		if (fds[FD_POLL_INOTIFY].revents & POLLIN) {
 			length = read(fds[FD_POLL_INOTIFY].fd, buffer, EVENT_BUF_LEN);
 
-			if( length < 0 )
-			{
+			if (length < 0) {
 				inotify_rm_watch(fd, wd);
 				close(fd);
 				return -errno;
 			}
 
 			i = 0;
-			while ( i < length ) {
-				struct inotify_event *event = ( struct inotify_event * ) &buffer[ i ];
-				if ( event->len > 0 && event->len < EVENT_NAME_MAX)
-				{
-					if ( event->mask & (IN_CREATE|IN_MODIFY|IN_ATTRIB)  )
-					{
-						if (!(event->mask & IN_ISDIR))
-						{
-							if(!strncmp(event->name, UNLOCK_MNT_STR, sizeof(UNLOCK_MNT_STR)))
-							{
+			while (i < length) {
+				struct inotify_event *event = (struct inotify_event *) &buffer[i];
+				if (event->len > 0 && event->len < EVENT_NAME_MAX) {
+					if (event->mask & (IN_CREATE|IN_MODIFY|IN_ATTRIB)) {
+						if (!(event->mask & IN_ISDIR)) {
+							if (!strncmp(event->name, UNLOCK_MNT_STR, sizeof(UNLOCK_MNT_STR))) {
 								inotify_rm_watch(fd, wd);
 								close(fd);
 								return 0;
