@@ -120,6 +120,59 @@ BuildArch: noarch
 %description headless
 This package provides the functions for headless device.
 
+###################################################################
+###################### Newly-created RPMs #########################
+###################################################################
+
+%package device-artik530
+Summary: Artik530
+Requires: %{name} = %{version}-%{release}
+BuildArch: noarch
+
+%description device-artik530
+This package provides system configuration files for the artik530 device.
+
+%package device-artik710
+Summary: Artik710
+Requires: %{name} = %{version}-%{release}
+BuildArch: noarch
+
+%description device-artik710
+This package provides system configuration files for the artik710 device.
+
+%package device-rpi3
+Summary: RPI3
+Requires: %{name} = %{version}-%{release}
+BuildArch: noarch
+
+%description device-rpi3
+This package provides system configuration files for the RPI3 device.
+
+%package profile-iot
+Summary:  System configuration files for IoT profiles
+Requires: %{name} = %{version}-%{release}
+Requires: pkgconfig(dbus-1)
+BuildArch: noarch
+
+%description profile-iot
+This package provides system configuration files for IoT profiles.
+
+%package -n feature-liblazymount
+Summary: Library for lazy mount feature
+Requires(post): /usr/bin/vconftool
+Requires: vconf
+
+%description -n feature-liblazymount
+Library for lazy mount feature. It supports some interface functions.
+
+%package -n feature-liblazymount-devel
+Summary: Development library for lazy mount feature
+Requires: vconf
+Requires: feature-liblazymount = %{version}
+
+%description -n feature-liblazymount-devel
+Development library for lazy mount feature.It supports some interface functions.
+
 %prep
 %setup -q
 
@@ -217,12 +270,6 @@ rm -rf %{buildroot}
 
 %post
 systemctl daemon-reload
-
-%post -n liblazymount
-/sbin/ldconfig
-systemctl daemon-reload
-
-%postun -n liblazymount  -p /sbin/ldconfig
 
 %files
 %manifest %{name}.manifest
@@ -355,6 +402,10 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 %{_unitdir_user}/wait-user-mount.service
 %endif
 
+%post -n liblazymount
+/sbin/ldconfig
+systemctl daemon-reload
+
 %files -n liblazymount-devel
 %defattr(-,root,root,-)
 %manifest liblazymount.manifest
@@ -365,6 +416,8 @@ mv %{_sysconfdir}/fstab_lazymnt %{_sysconfdir}/fstab
 %if ! %{temp_wait_mount}
 %{_bindir}/test_lazymount
 %endif
+
+%postun -n liblazymount  -p /sbin/ldconfig
 
 %files profile_ivi
 %license LICENSE.Apache-2.0
@@ -384,3 +437,79 @@ ln -s /sbin/init.wrapper /sbin/init
 %{_bindir}/sdb-mode.sh
 %{_prefix}/lib/udev/rules.d/99-sdb-switch.rules
 %{_sysconfdir}/profile.d/headless_env.sh
+
+###################################################################
+###################### Newly-created RPMs #########################
+###################################################################
+
+%files device-artik530
+
+%files device-artik710
+
+%files device-rpi3
+%manifest %{name}.manifest
+%license LICENSE.Apache-2.0
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
+%{_sysconfdir}/fstab
+%{_prefix}/lib/udev/hwdb.d/60-evdev.hwdb
+
+%post device-rpi3
+%{_prefix}/bin/udevadm hwdb --update
+
+%files profile-iot
+%manifest %{name}.manifest
+%license LICENSE.Apache-2.0
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
+%{_sysconfdir}/fstab_2part
+%{_prefix}/lib/udev/hwdb.d/60-evdev.hwdb
+
+%post profile-iot
+%{_prefix}/bin/udevadm hwdb --update
+rm %{_sysconfdir}/fstab
+mv %{_sysconfdir}/fstab_2part %{_sysconfdir}/fstab
+
+%posttrans profile-iot
+# platform/upstream/dbus
+rm -f %{_bindir}/dbus-cleanup-sockets
+rm -f %{_bindir}/dbus-run-session
+rm -f %{_bindir}/dbus-test-tool
+rm -f %{_bindir}/dbus-update-activation-environment
+rm -f %{_bindir}/dbus-uuidgen
+# platform/upstream/e2fsprogs
+rm -f %{_sbindir}/e4crypt
+
+%files -n feature-liblazymount
+%defattr(-,root,root,-)
+%{_libdir}/liblazymount.so.*
+%manifest liblazymount.manifest
+%license LICENSE.Apache-2.0
+%{_unitdir}/basic.target.wants/lazy_mount.path
+%{_unitdir}/lazy_mount.path
+%{_unitdir}/lazy_mount.service
+%{_bindir}/mount-user.sh
+%if %{temp_wait_mount}
+%{_bindir}/test_lazymount
+%{_unitdir_user}/basic.target.wants/wait-user-mount.service
+%{_unitdir_user}/wait-user-mount.service
+%endif
+
+%post -n feature-liblazymount
+/sbin/ldconfig
+systemctl daemon-reload
+
+%files -n feature-liblazymount-devel
+%defattr(-,root,root,-)
+%manifest liblazymount.manifest
+%license LICENSE.Apache-2.0
+%{_libdir}/liblazymount.so
+%{_includedir}/lazymount/lazy_mount.h
+%{_libdir}/pkgconfig/liblazymount.pc
+%if ! %{temp_wait_mount}
+%{_bindir}/test_lazymount
+%endif
+
+%postun -n feature-liblazymount  -p /sbin/ldconfig
