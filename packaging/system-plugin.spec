@@ -41,7 +41,7 @@ This package provides RPi3 specific system configuration files.
 %package iot
 Summary:  IoT specific system configuration files
 Requires: %{name} = %{version}-%{release}
-Requires: pkgconfig(dbus-1)
+Requires: dbus-1
 BuildArch: noarch
 
 %description iot
@@ -151,7 +151,7 @@ This package provides system configuration files for the RPI3 device.
 %package profile-iot
 Summary:  System configuration files for IoT profiles
 Requires: %{name} = %{version}-%{release}
-Requires: pkgconfig(dbus-1)
+Requires: dbus-1
 BuildArch: noarch
 
 %description profile-iot
