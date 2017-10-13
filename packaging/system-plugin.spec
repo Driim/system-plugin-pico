@@ -41,7 +41,7 @@ This package provides RPi3 specific system configuration files.
 %package iot
 Summary:  IoT specific system configuration files
 Requires: %{name} = %{version}-%{release}
-Requires: dbus-1
+Requires: dbus
 BuildArch: noarch
 
 %description iot
@@ -151,7 +151,7 @@ This package provides system configuration files for the RPI3 device.
 %package profile-iot
 Summary:  System configuration files for IoT profiles
 Requires: %{name} = %{version}-%{release}
-Requires: dbus-1
+Requires: dbus
 BuildArch: noarch
 
 %description profile-iot
@@ -447,69 +447,69 @@ ln -s /sbin/init.wrapper /sbin/init
 %files device-artik710
 
 %files device-rpi3
-%manifest %{name}.manifest
-%license LICENSE.Apache-2.0
-%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
-%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
-%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
-%{_sysconfdir}/fstab
-%{_prefix}/lib/udev/hwdb.d/60-evdev.hwdb
+#%manifest %{name}.manifest
+#%license LICENSE.Apache-2.0
+#%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
+#%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
+#%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
+#%{_sysconfdir}/fstab
+#%{_prefix}/lib/udev/hwdb.d/60-evdev.hwdb
 
 %post device-rpi3
-%{_prefix}/bin/udevadm hwdb --update
+#%{_prefix}/bin/udevadm hwdb --update
 
 %files profile-iot
-%manifest %{name}.manifest
-%license LICENSE.Apache-2.0
-%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
-%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
-%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
-%{_sysconfdir}/fstab_2part
-%{_prefix}/lib/udev/hwdb.d/60-evdev.hwdb
+#%manifest %{name}.manifest
+#%license LICENSE.Apache-2.0
+#%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
+#%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
+#%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
+#%{_sysconfdir}/fstab_2part
+#%{_prefix}/lib/udev/hwdb.d/60-evdev.hwdb
 
 %post profile-iot
-%{_prefix}/bin/udevadm hwdb --update
-rm %{_sysconfdir}/fstab
-mv %{_sysconfdir}/fstab_2part %{_sysconfdir}/fstab
+#%{_prefix}/bin/udevadm hwdb --update
+#rm %{_sysconfdir}/fstab
+#mv %{_sysconfdir}/fstab_2part %{_sysconfdir}/fstab
 
 %posttrans profile-iot
-# platform/upstream/dbus
-rm -f %{_bindir}/dbus-cleanup-sockets
-rm -f %{_bindir}/dbus-run-session
-rm -f %{_bindir}/dbus-test-tool
-rm -f %{_bindir}/dbus-update-activation-environment
-rm -f %{_bindir}/dbus-uuidgen
-# platform/upstream/e2fsprogs
-rm -f %{_sbindir}/e4crypt
+## platform/upstream/dbus
+#rm -f %{_bindir}/dbus-cleanup-sockets
+#rm -f %{_bindir}/dbus-run-session
+#rm -f %{_bindir}/dbus-test-tool
+#rm -f %{_bindir}/dbus-update-activation-environment
+#rm -f %{_bindir}/dbus-uuidgen
+## platform/upstream/e2fsprogs
+#rm -f %{_sbindir}/e4crypt
 
 %files -n feature-liblazymount
-%defattr(-,root,root,-)
-%{_libdir}/liblazymount.so.*
-%manifest liblazymount.manifest
-%license LICENSE.Apache-2.0
-%{_unitdir}/basic.target.wants/lazy_mount.path
-%{_unitdir}/lazy_mount.path
-%{_unitdir}/lazy_mount.service
-%{_bindir}/mount-user.sh
-%if %{temp_wait_mount}
-%{_bindir}/test_lazymount
-%{_unitdir_user}/basic.target.wants/wait-user-mount.service
-%{_unitdir_user}/wait-user-mount.service
-%endif
+#%defattr(-,root,root,-)
+#%{_libdir}/liblazymount.so.*
+#%manifest liblazymount.manifest
+#%license LICENSE.Apache-2.0
+#%{_unitdir}/basic.target.wants/lazy_mount.path
+#%{_unitdir}/lazy_mount.path
+#%{_unitdir}/lazy_mount.service
+#%{_bindir}/mount-user.sh
+#%if %{temp_wait_mount}
+#%{_bindir}/test_lazymount
+#%{_unitdir_user}/basic.target.wants/wait-user-mount.service
+#%{_unitdir_user}/wait-user-mount.service
+#%endif
 
 %post -n feature-liblazymount
-/sbin/ldconfig
-systemctl daemon-reload
+#/sbin/ldconfig
+#systemctl daemon-reload
 
 %files -n feature-liblazymount-devel
-%defattr(-,root,root,-)
-%manifest liblazymount.manifest
-%license LICENSE.Apache-2.0
-%{_libdir}/liblazymount.so
-%{_includedir}/lazymount/lazy_mount.h
-%{_libdir}/pkgconfig/liblazymount.pc
-%if ! %{temp_wait_mount}
-%{_bindir}/test_lazymount
-%endif
+#%defattr(-,root,root,-)
+#%manifest liblazymount.manifest
+#%license LICENSE.Apache-2.0
+#%{_libdir}/liblazymount.so
+#%{_includedir}/lazymount/lazy_mount.h
+#%{_libdir}/pkgconfig/liblazymount.pc
+#%if ! %{temp_wait_mount}
+#%{_bindir}/test_lazymount
+#%endif
 
 %postun -n feature-liblazymount  -p /sbin/ldconfig
