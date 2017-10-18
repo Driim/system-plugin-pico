@@ -2,6 +2,7 @@
 Description=Generate environment from /etc/profile.d
 DefaultDependencies=no
 Before=basic.target
+RequiresMountsFor=/opt
 
 [Service]
 Type=oneshot
