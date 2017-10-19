@@ -157,20 +157,36 @@ BuildArch: noarch
 %description profile-iot
 This package provides system configuration files for IoT profiles.
 
-%package -n feature-liblazymount
+%package profile-iot-headless
+Summary:  System configuration files for IoT headless profiles
+Requires: %{name} = %{version}-%{release}
+BuildArch: noarch
+
+%description profile-iot-headless
+This package provides system configuration files for IoT headless profiles.
+
+%package config-udev-sdbd
+Summary: System configuration files to trigger sdb with udev rule
+Requires: %{name} = %{version}-%{release}
+BuildArch: noarch
+
+%description config-udev-sdbd
+This package provides configuration files to trigger sdb with udev rule.
+
+%package feature-liblazymount
 Summary: Library for lazy mount feature
 Requires(post): /usr/bin/vconftool
 Requires: vconf
 
-%description -n feature-liblazymount
+%description feature-liblazymount
 Library for lazy mount feature. It supports some interface functions.
 
-%package -n feature-liblazymount-devel
+%package feature-liblazymount-devel
 Summary: Development library for lazy mount feature
 Requires: vconf
 Requires: feature-liblazymount = %{version}
 
-%description -n feature-liblazymount-devel
+%description feature-liblazymount-devel
 Development library for lazy mount feature.It supports some interface functions.
 
 %prep
@@ -265,6 +281,11 @@ mkdir -p %{buildroot}%{_prefix}/lib/udev/rules.d/
 install -m 644 rules/99-sdb-switch.rules %{buildroot}%{_prefix}/lib/udev/rules.d/
 mkdir -p %{buildroot}%{_sysconfdir}/profile.d
 install -m 755 scripts/headless_env.sh %{buildroot}%{_sysconfdir}/profile.d
+
+# config-udev-sdbd
+mkdir -p %{buildroot}%{_prefix}/lib/udev/rules.d/
+install -m 644 rules/99-sdb-extcon.rules %{buildroot}%{_prefix}/lib/udev/rules.d/
+
 %clean
 rm -rf %{buildroot}
 
@@ -482,7 +503,18 @@ ln -s /sbin/init.wrapper /sbin/init
 ## platform/upstream/e2fsprogs
 #rm -f %{_sbindir}/e4crypt
 
-%files -n feature-liblazymount
+%files profile-iot-headless
+%manifest %{name}.manifest
+%license LICENSE.Apache-2.0
+%{_sysconfdir}/profile.d/headless_env.sh
+
+%files config-udev-sdbd
+%manifest %{name}.manifest
+%license LICENSE.Apache-2.0
+%{_bindir}/sdb-mode.sh
+%{_prefix}/lib/udev/rules.d/99-sdb-extcon.rules
+
+%files feature-liblazymount
 #%defattr(-,root,root,-)
 #%{_libdir}/liblazymount.so.*
 #%manifest liblazymount.manifest
@@ -497,11 +529,11 @@ ln -s /sbin/init.wrapper /sbin/init
 #%{_unitdir_user}/wait-user-mount.service
 #%endif
 
-%post -n feature-liblazymount
+%post feature-liblazymount
 #/sbin/ldconfig
 #systemctl daemon-reload
 
-%files -n feature-liblazymount-devel
+%files feature-liblazymount-devel
 #%defattr(-,root,root,-)
 #%manifest liblazymount.manifest
 #%license LICENSE.Apache-2.0
@@ -512,4 +544,4 @@ ln -s /sbin/init.wrapper /sbin/init
 #%{_bindir}/test_lazymount
 #%endif
 
-%postun -n feature-liblazymount  -p /sbin/ldconfig
+%postun feature-liblazymount  -p /sbin/ldconfig
