@@ -144,6 +144,14 @@ BuildArch: noarch
 %description config-udev-sdbd-switch
 This package provides configuration files to trigger sdb with udev rule.
 
+%package config-2parts
+Summary: System configuration files for storage partitions
+Requires: %{name} = %{version}-%{release}
+BuildArch: noarch
+
+%description config-2parts
+This package provides configuration files for /etc/fstab(remount) and resize2fs@.service.
+
 %prep
 %setup -q
 
@@ -204,7 +212,7 @@ install -m 644 etc/fstab_initrd %{buildroot}%{_sysconfdir}
 # lazymnt
 install -m 644 etc/fstab_lazymnt %{buildroot}%{_sysconfdir}
 install -m 644 etc/fstab_initrd_lazymnt %{buildroot}%{_sysconfdir}
-install -m 644 etc/fstab_2part %{buildroot}%{_sysconfdir}
+install -m 644 etc/fstab_2parts %{buildroot}%{_sysconfdir}
 %if %{temp_wait_mount}
 mkdir -p %{buildroot}%{_unitdir_user}/basic.target.wants
 install -m 644 units/wait-user-mount.service %{buildroot}%{_unitdir_user}
@@ -284,13 +292,12 @@ systemctl daemon-reload
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-user.service
 %{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
-%{_sysconfdir}/fstab_2part
+%{_sysconfdir}/fstab_2parts
 %{_prefix}/lib/udev/hwdb.d/60-evdev.hwdb
 
 %post iot
 %{_prefix}/bin/udevadm hwdb --update
-rm %{_sysconfdir}/fstab
-mv %{_sysconfdir}/fstab_2part %{_sysconfdir}/fstab
+mv %{_sysconfdir}/fstab_2parts %{_sysconfdir}/fstab
 
 %posttrans iot
 # platform/upstream/dbus
@@ -430,3 +437,13 @@ ln -s /sbin/init.wrapper /sbin/init
 %license LICENSE.Apache-2.0
 %{_bindir}/sdb-mode.sh
 %{_prefix}/lib/udev/rules.d/99-sdb-switch.rules
+
+%files config-2parts
+%manifest %{name}.manifest
+%license LICENSE.Apache-2.0
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-rootfs.service
+%{_unitdir}/basic.target.wants/resize2fs@dev-disk-by\x2dlabel-system\x2ddata.service
+%{_sysconfdir}/fstab_2parts
+
+%post config-2parts
+mv %{_sysconfdir}/fstab_2parts %{_sysconfdir}/fstab
