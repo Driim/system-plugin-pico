@@ -1,0 +1,46 @@
+#!/bin/sh
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+
+# Setting paths
+ROOTFS=/dev/mmcblk0p2
+SYSTEM_DATA=/dev/mmcblk0p3
+USER=/dev/mmcblk0p4
+
+USER_MNT=/opt/usr
+SYSTEM_DATA_MNT=/opt
+
+mount -o nosuid,noexec,nodev -t sysfs sysfs /sys
+mount -o nosuid,noexec,nodev -t proc proc /proc
+
+#Fsck, resize, mount devices
+if [ x$SYSTEM_DATA = "x" ]
+    echo "Warning : There is no system-data partition"
+then
+    /sbin/resize2fs -f $SYSTEM_DATA
+    /sbin/fsck -y $SYSTEM_DATA
+    /bin/mount $SYSTEM_DATA $SYSTEM_DATA_MNT
+fi
+
+if [ x$USER = "x" ]
+    echo "Warning : There is no system-data partition"
+then
+    /sbin/resize2fs -f $USER
+    /sbin/fsck -y $USER
+    /bin/mount $USER $USER_MNT
+fi
+
+# Unmount before start systemd
+umount /sys/
+umount /proc/
+
+INIT=/usr/lib/systemd/systemd
+if [ $$ = 1 ]; then
+    [ "$INIT" ] && exec "$INIT" "$@"
+fi
+
+echo "======================================================================"
+echo "[/sbin/init] WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo "This Message should never be printed. ($INIT execution failure?)"
+echo "======================================================================"
+exec /bin/sh

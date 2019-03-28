@@ -112,6 +112,14 @@ BuildArch: noarch
 %description init_wrapper
 This package provides init.wrapper and init symlink file for init wrapper booting.
 
+%package init_wrapper_pico
+Summary: Support init.wrapper booting.
+Requires: %{name} = %{version}-%{release}
+BuildArch: noarch
+
+%description init_wrapper_pico
+This package provides init.wrapper and init symlink file for init wrapper booting.
+
 %package headless
 Summary: Support headless device.
 Requires: %{name} = %{version}-%{release}
@@ -236,6 +244,10 @@ install -m 775 -D scripts/fixed-multi-user.sh %{buildroot}%{_datadir}/fixed_mult
 # init_wrapper
 mkdir -p %{buildroot}%{_sbindir}
 install -m 755 scripts/init.wrapper %{buildroot}%{_sbindir}
+
+# init_wrapper_pico
+mkdir -p %{buildroot}%{_sbindir}
+install -m 755 scripts/pico/init.wrapper %{buildroot}%{_sbindir}
 
 # headless
 mkdir -p %{buildroot}%{_sbindir}
@@ -412,6 +424,14 @@ systemctl daemon-reload
 %{_sbindir}/init.wrapper
 
 %posttrans init_wrapper
+rm -f /sbin/init
+ln -s /sbin/init.wrapper /sbin/init
+
+%files init_wrapper_pico
+%license LICENSE.Apache-2.0
+%{_sbindir}/init.wrapper
+
+%posttrans init_wrapper_pico
 rm -f /sbin/init
 ln -s /sbin/init.wrapper /sbin/init
 
